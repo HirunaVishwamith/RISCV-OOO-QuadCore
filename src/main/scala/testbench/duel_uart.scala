@@ -15,6 +15,8 @@ import os.write
 class uartPort extends Module {
   val client = IO(Flipped(new AXI))
 
+  val io_mtime = Input(0.U(64.W))
+
   val readRequestBuffer = RegInit(new Bundle {
     val valid = Bool()
     val address = UInt(32.W)
@@ -51,15 +53,25 @@ class uartPort extends Module {
     readRequestBuffer.len := readRequestBuffer.len - 1.U
     when(!readRequestBuffer.len.orR) { readRequestBuffer.valid := false.B }
   }
-  val mtime = RegInit(0.U(64.W)) // only need one mtime for all clients
+  
   val mtimecmp = RegInit(0.U(64.W))
+  val msip = RegInit(0.U(32.W))
   val mtimecmplowtemp = Reg(UInt(32.W))
-  val couter_wrap = RegInit(0.U(4.W))
-  couter_wrap := couter_wrap + 1.U
-  mtime := mtime + couter_wrap.andR.asUInt
+
   val mtimeRead = Reg(UInt(64.W))
+  val mtimecmpRead = Reg(UInt(64.W))
+  val msipRead = Reg(UInt(32.W))
+
   when(client.ARREADY && client.ARVALID) {
-    mtimeRead := mtime
+    mtimeRead := io_mtime
+  }
+
+  when(client.ARREADY && client.ARVALID) {
+    mtimecmpRead := mtimecmp
+  }
+
+  when(client.ARREADY && client.ARVALID) {
+    msipRead := msip
   }
 
   // we don't expect writes larger than 64-bits to uart or clint
@@ -72,6 +84,10 @@ class uartPort extends Module {
     is("he000002c".U) { client.RDATA := 2.U }
     is("he000102c".U) { client.RDATA := 2.U }
     is("h0200bff8".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimeRead(31, 0), mtimeRead(63, 32)) }
+    is("h02004000".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimecmpRead(31,0),mtimecmpRead(63,32))} // check this only core 0 should access this adress
+    is("h02004008".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimecmpRead(31,0),mtimecmpRead(63,32))} // check this only core 1 should access this adress
+    is("h02000000".U) { client.RDATA := msipRead  // check this only core 0 should access this adress
+    is("h02000004".U) { client.RDATA := msipRead  // check this only core 1 should access this adress
     is("h04000000".U) { client.RDATA := ps_stat }
   }
   client.RID := readRequestBuffer.id
@@ -92,61 +108,61 @@ class uartPort extends Module {
     .foreach { case(buffer, next) => { buffer := next } }  
   }
 
-  // val terminalReady = RegInit(false.B)
-  // when(!terminalReady) {
-  //   terminalReady := "buildroot login: ".reverse.toCharArray().toSeq.zip(lastUartChars.toSeq) map { case(char, uchar) => (char.U === uchar)} reduce(_ && _)
-  // }
+  val terminalReady = RegInit(false.B)
+  when(!terminalReady) {
+    terminalReady := "buildroot login: ".reverse.toCharArray().toSeq.zip(lastUartChars.toSeq) map { case(char, uchar) => (char.U === uchar)} reduce(_ && _)
+  }
 
-  // val afterLogin = RegInit(false.B)
-  // when(!afterLogin) {
-  //   afterLogin := "~ # ".reverse.toCharArray().toSeq.zip(lastUartChars.toSeq) map { case(char, uchar) => (char.U === uchar)} reduce(_ && _)
-  // }
+  val afterLogin = RegInit(false.B)
+  when(!afterLogin) {
+    afterLogin := "~ # ".reverse.toCharArray().toSeq.zip(lastUartChars.toSeq) map { case(char, uchar) => (char.U === uchar)} reduce(_ && _)
+  }
 
-  // val hardInput = RegInit(VecInit("root\nls ..".map(c => new Bundle {
-  //   val valid = Bool()
-  //   val char = UInt(8.W)
-  // } Lit(_.valid -> true.B, _.char -> c.U))))
+  val hardInput = RegInit(VecInit("root\nls ..".map(c => new Bundle {
+    val valid = Bool()
+    val char = UInt(8.W)
+  } Lit(_.valid -> true.B, _.char -> c.U))))
 
-  // val command = RegInit(VecInit("ls .. && poweroff\n".map(c => new Bundle {
-  //   val valid = Bool()
-  //   val char = UInt(8.W)
-  // } Lit(_.valid -> true.B, _.char -> c.U))))
+  val command = RegInit(VecInit("ls .. && poweroff\n".map(c => new Bundle {
+    val valid = Bool()
+    val char = UInt(8.W)
+  } Lit(_.valid -> true.B, _.char -> c.U))))
 
-  // when(
-  //   ((readRequestBuffer.address & "hffff0fff".U) === "he000002c".U) && 
-  //   readRequestBuffer.valid && terminalReady && !afterLogin
-  // ) {
-  //   client.RDATA := (8.U(32.W) | Cat(!(hardInput(0).valid.asUInt),0.U(1.W)))
-  // }
+  when(
+    ((readRequestBuffer.address & "hffff0fff".U) === "he000002c".U) && 
+    readRequestBuffer.valid && terminalReady && !afterLogin
+  ) {
+    client.RDATA := (8.U(32.W) | Cat(!(hardInput(0).valid.asUInt),0.U(1.W)))
+  }
 
-  // when(
-  //   ((readRequestBuffer.address & "hffff0fff".U) === "he0000030".U) && 
-  //   readRequestBuffer.valid && terminalReady && !afterLogin
-  // ) {
-  //   client.RDATA := hardInput(0).char
-  //   when(client.RREADY) {
-  //     hardInput.dropRight(1).zip(hardInput.drop(1)).foreach { case(curr, next) => curr := next }
-  //     hardInput.last.valid := false.B
-  //   }
-  // }
+  when(
+    ((readRequestBuffer.address & "hffff0fff".U) === "he0000030".U) && 
+    readRequestBuffer.valid && terminalReady && !afterLogin
+  ) {
+    client.RDATA := hardInput(0).char
+    when(client.RREADY) {
+      hardInput.dropRight(1).zip(hardInput.drop(1)).foreach { case(curr, next) => curr := next }
+      hardInput.last.valid := false.B
+    }
+  }
 
-  // when(
-  //   ((readRequestBuffer.address & "hffff0fff".U) === "he000002c".U) && 
-  //   readRequestBuffer.valid && afterLogin
-  // ) {
-  //   client.RDATA := (8.U(32.W) | Cat(!(command(0).valid.asUInt),0.U(1.W)))
-  // }
+  when(
+    ((readRequestBuffer.address & "hffff0fff".U) === "he000002c".U) && 
+    readRequestBuffer.valid && afterLogin
+  ) {
+    client.RDATA := (8.U(32.W) | Cat(!(command(0).valid.asUInt),0.U(1.W)))
+  }
 
-  // when(
-  //   ((readRequestBuffer.address & "hffff0fff".U) === "he0000030".U) && 
-  //   readRequestBuffer.valid && afterLogin
-  // ) {
-  //   client.RDATA := command(0).char
-  //   when(client.RREADY) {
-  //     command.dropRight(1).zip(command.drop(1)).foreach { case(curr, next) => curr := next }
-  //     command.last.valid := false.B
-  //   }
-  // }
+  when(
+    ((readRequestBuffer.address & "hffff0fff".U) === "he0000030".U) && 
+    readRequestBuffer.valid && afterLogin
+  ) {
+    client.RDATA := command(0).char
+    when(client.RREADY) {
+      command.dropRight(1).zip(command.drop(1)).foreach { case(curr, next) => curr := next }
+      command.last.valid := false.B
+    }
+  }
 
   when(writeRequestBuffer.address.valid && writeRequestBuffer.data.valid) {
     writeRequestBuffer.data.valid := false.B
@@ -171,13 +187,16 @@ class uartPort extends Module {
   }
 
   when(writeRequestBuffer.data.valid && !writeRequestBuffer.data.last) { mtimecmplowtemp := writeRequestBuffer.data.data }
-  when(
-    writeRequestBuffer.address.valid && 
-    (writeRequestBuffer.address.offset === "h02004000".U) &&
-    writeRequestBuffer.data.valid &&
-    writeRequestBuffer.data.last
-  ) {
+  when(writeRequestBuffer.address.valid && (writeRequestBuffer.address.offset === "h02004000".U) && writeRequestBuffer.data.valid && writeRequestBuffer.data.last) { // check this only used in core 0
     mtimecmp := Cat(writeRequestBuffer.data.data, mtimecmplowtemp)
+  }.elsewhen(writeRequestBuffer.address.valid && (writeRequestBuffer.address.offset === "h02004008".U) && writeRequestBuffer.data.valid && writeRequestBuffer.data.last) { // check this only use in core 1
+    mtimecmp := Cat(writeRequestBuffer.data.data, mtimecmplowtemp)
+  }
+
+  when(writeRequestBuffer.address.valid && (writeRequestBuffer.address.offset === "h02000000".U) && writeRequestBuffer.data.valid && writeRequestBuffer.data.last) { // check this only used in core 0
+    msip := writeRequestBuffer.data.data
+  }.elsewhen(writeRequestBuffer.address.valid && (writeRequestBuffer.address.offset === "h02004004".U) && writeRequestBuffer.data.valid && writeRequestBuffer.data.last) { // check this only use in core 1
+    msip := writeRequestBuffer.data.data
   }
 
   client.ARREADY := !readRequestBuffer.valid
@@ -190,13 +209,20 @@ class uartPort extends Module {
   client.BVALID := writeRequestBuffer.address.valid && writeRequestBuffer.data.valid && writeRequestBuffer.data.last
 
   val MTIP = IO(Output(Bool()))
-  MTIP := (mtime > mtimecmp)
+  val MSIP = IO(Output(UInt(32.W)))
+  MTIP := (io_mtime > mtimecmp)
+  MSIP := msip
 }
 
 
 class MultiUart extends Module {
   val client0 = IO(Flipped(new AXI))
   val client1 = IO(Flipped(new AXI))
+
+  val mtime = RegInit(0.U(64.W)) // only need one mtime for all clients
+  val couter_wrap = RegInit(0.U(4.W))
+  couter_wrap := couter_wrap + 1.U
+  mtime := mtime + couter_wrap.andR.asUInt
 
   val uart0 = Module(new uartPort{
     val putCharOut0 = IO(Output(putChar.cloneType))
@@ -210,6 +236,8 @@ class MultiUart extends Module {
   uart0.client <> client0
   uart1.client <> client1
 
+  uart0.io_mtime := mtime
+  uart1.io_mtime := mtime
 
   val putChar0 = IO(Output(uart0.putCharOut0.cloneType))
   putChar0 := uart0.putCharOut0
