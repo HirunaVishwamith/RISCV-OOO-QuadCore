@@ -226,11 +226,16 @@ class MultiUart extends Module {
 
   val uart0 = Module(new uartPort{
     val putCharOut0 = IO(Output(putChar.cloneType))
+    val ps_start_port0 = IO(Input(ps_stat.cloneType))
     putCharOut0 := putChar
+    ps_stat := ps_start_port0
   })
   val uart1 = Module(new uartPort{
     val putCharOut1 = IO(Output(putChar.cloneType))
+    val ps_start_port = IO(Input(ps_stat.cloneType))
     putCharOut1 := putChar
+    ps_stat := ps_start_port1
+
   })
 
   uart0.client <> client0
@@ -253,9 +258,74 @@ class MultiUart extends Module {
 
 }
 
+
 object MultiUart extends App {
   emitVerilog(new MultiUart)
 }
+
+class MultiPSClint extends MultiUart {
+  val psMaster = IO(Flipped(new AXI))
+
+  val awFired, wFired, bValid, finished = RegInit(false.B)
+  psMaster.AWREADY := !awFired
+  psMaster.WREADY := !wFired
+  psMaster.BVALID := awFired && wFired
+
+  when(psMaster.AWVALID && psMaster.AWREADY) { awFired := true.B }
+  when(psMaster.WVALID && psMaster.WREADY) { wFired := true.B }
+  when(psMaster.BVALID && psMaster.BREADY) { finished := true.B }
+
+  when(finished) {
+    psMaster.AWREADY := false.B
+    psMaster.WREADY := false.B
+    psMaster.BVALID := false.B
+  }
+  val bid = Reg(psMaster.AWID.cloneType)
+  when(psMaster.AWREADY && psMaster.AWVALID) { bid := psMaster.AWID }
+  psMaster.BID := bid
+  psMaster.BRESP := 0.U
+
+  psMaster.ARREADY := false.B
+
+  psMaster.RVALID := false.B
+  psMaster.RDATA := 0.U
+  psMaster.RID := 0.U
+  psMaster.RLAST := false.B
+  psMaster.RRESP := 0.U
+
+  val psStartReg0 = RegInit(0.U(32.W))
+  val psStartReg1 = RegInit(0.U(32.W))
+
+  when(psMaster.WREADY && psMaster.WVALID) { 
+    // ps_stat := psMaster.WDATA 
+    psStartReg0 := psMaster.WDATA
+    psStartReg1 := psMaster.WDATA
+
+  }
+
+  uart0.ps_start_port0 := psStartReg0
+  uart1.ps_start_port1 := psStartReg1
+
+  val STANDBY0, RUNNING0 = IO(Output(Bool()))
+  val STANDBY1, RUNNING1 = IO(Output(Bool()))
+
+  STANDBY0 := !psStartReg0.orR
+  STANDBY1 := !psStartReg1.orR
+
+  RUNNING0 := psStartReg0.orR
+  RUNNING1 := psStartReg1.orR
+
+  // val STANDBY, RUNNING = IO(Output(Bool()))
+  // STANDBY := !ps_stat.orR
+  // RUNNING := ps_stat.orR
+}
+
+
+
+object MultiPSClint extends App {
+  emitVerilog(new MultiPSClint)
+}
+
 
 
 // need to give seperate read buffer to the uart ports but only core zero will do the linux stuff booting
