@@ -15,7 +15,7 @@ import os.write
 class uartPort extends Module {
   val client = IO(Flipped(new AXI))
 
-  val io_mtime = Input(0.U(64.W))
+  val io_mtime = IO(Input(UInt(64.W)))
 
   val readRequestBuffer = RegInit(new Bundle {
     val valid = Bool()
@@ -86,8 +86,8 @@ class uartPort extends Module {
     is("h0200bff8".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimeRead(31, 0), mtimeRead(63, 32)) }
     is("h02004000".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimecmpRead(31,0),mtimecmpRead(63,32))} // check this only core 0 should access this adress
     is("h02004008".U) { client.RDATA := Mux(readRequestBuffer.len.orR, mtimecmpRead(31,0),mtimecmpRead(63,32))} // check this only core 1 should access this adress
-    is("h02000000".U) { client.RDATA := msipRead  // check this only core 0 should access this adress
-    is("h02000004".U) { client.RDATA := msipRead  // check this only core 1 should access this adress
+    is("h02000000".U) { client.RDATA := msipRead } // check this only core 0 should access this adress
+    is("h02000004".U) { client.RDATA := msipRead } // check this only core 1 should access this adress
     is("h04000000".U) { client.RDATA := ps_stat }
   }
   client.RID := readRequestBuffer.id
@@ -232,7 +232,7 @@ class MultiUart extends Module {
   })
   val uart1 = Module(new uartPort{
     val putCharOut1 = IO(Output(putChar.cloneType))
-    val ps_start_port = IO(Input(ps_stat.cloneType))
+    val ps_start_port1 = IO(Input(ps_stat.cloneType))
     putCharOut1 := putChar
     ps_stat := ps_start_port1
 
