@@ -39,15 +39,8 @@ class mainMemory(
   // (0 to 7).foreach { i => memory.write(programmer.offset + i.U, programmer.byte(8*i + 7, 8*i)) }
 
   // connection with core pipeline
-  val clients = IO(Flipped(Vec(2, (new ACE(busWidth = 64)))))
-  for (i <- 0 until 2) {
-  clients(i).CRREADY := 0.U
-  clients(i).ACPROT := 0.U
-  clients(i).ACVALID := 0.U
-  clients(i).ACSNOOP := 0.U
-  clients(i).ACADDR := 0.U
-  clients(i).CDREADY := 0.U
-}
+  val clients = IO(Flipped(Vec(2, (new AXI(1,32,256)))))
+
 
   val instruction :: data :: Nil = Enum(2)
 
@@ -63,7 +56,7 @@ class mainMemory(
   .foreach{ case(client, buffer) => 
     when(client.ARREADY && client.ARVALID) { 
       buffer.valid := true.B
-      buffer.address := (client.ARADDR&(~(3.U(32.W)))) + 8.U //leon changed
+      buffer.address := (client.ARADDR&(~(3.U(32.W)))) + 32.U //leon changed
       buffer.id := client.ARID
       buffer.beatsRemaining := client.ARLEN
     } 
@@ -82,7 +75,7 @@ class mainMemory(
   .foreach{ case(client, (request, response)) =>
     when(client.RREADY || !response.valid) {
       response.valid := request.valid
-      response.data := Cat(Seq.tabulate(8)(i => memory.read(i.U + Mux(request.valid, request.address, (client.ARADDR&(~(3.U(32.W))))))).reverse) //leon
+      response.data := Cat(Seq.tabulate(32)(i => memory.read(i.U + Mux(request.valid, request.address, (client.ARADDR&(~(3.U(32.W))))))).reverse) //leon
       response.last := Mux(!response.last, request.valid && !(request.beatsRemaining.orR), !(client.RVALID && client.RREADY))
       response.id := request.id
 
@@ -90,7 +83,7 @@ class mainMemory(
         when(!request.beatsRemaining.orR) { request.valid := false.B }
         .otherwise { request.beatsRemaining := (request.beatsRemaining - 1.U) }
 
-        request.address := request.address + 8.U //leon changed
+        request.address := request.address + 32.U //leon changed
       }
     }  
     client.RVALID := response.valid
@@ -136,10 +129,10 @@ class mainMemory(
 
   // writing to memory
   when(writeBuffers.addressValid && writeBuffers.dataValid) {
-    Seq.tabulate(8)(i => (i, (writeBuffers.data >> (i*8))(7, 0), writeBuffers.dataMask(i))) //leon
+    Seq.tabulate(32)(i => (i, (writeBuffers.data >> (i*8))(7, 0), writeBuffers.dataMask(i))) //leon
     .foreach{ case(offset, data, maskBit) => when(maskBit.asBool) { memory.write(writeBuffers.address + offset.U, data) } }
 
-    writeBuffers.address := writeBuffers.address + 8.U //leon changed
+    writeBuffers.address := writeBuffers.address + 32.U //leon changed
   }
   
   // write response buffer

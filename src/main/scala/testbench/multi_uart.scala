@@ -51,7 +51,7 @@
 //     readRequestBuffer.len := readRequestBuffer.len - 1.U
 //     when(!readRequestBuffer.len.orR) { readRequestBuffer.valid := false.B }
 //   }
-//   val mtime = RegInit(0.U(64.W)) // only need one mtime for all clients
+//   val mtime = RegInit(0.U(64.W))
 //   val mtimecmp = RegInit(0.U(64.W))
 //   val mtimecmplowtemp = Reg(UInt(32.W))
 //   val couter_wrap = RegInit(0.U(4.W))
@@ -228,8 +228,3 @@
 // object MultiUart extends App {
 //   emitVerilog(new MultiUart)
 // }
-
-
-// // need to give seperate read buffer to the uart ports but only core zero will do the linux stuff booting
-// // neet to make a common clint such that it has two ports but the uart stuff might not be needed for fpga
-// //  need MSIP port also
