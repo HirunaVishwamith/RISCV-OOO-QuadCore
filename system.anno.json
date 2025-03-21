@@ -9,109 +9,109 @@
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|shiftReg",
     "duplicate":"~system|system/core0:system_Anon/fetch:fetch/predictor:gshare_predictor/correct_history:shiftReg",
-    "index":0.01652892561983471
+    "index":0.017391304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|updateShiftReg",
     "duplicate":"~system|system/core0:system_Anon/fetch:fetch/predictor:gshare_predictor/predicted_history:updateShiftReg",
-    "index":0.024793388429752067
+    "index":0.02608695652173913
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|gshare_predictor",
     "duplicate":"~system|system/core0:system_Anon/fetch:fetch/predictor:gshare_predictor",
-    "index":0.03305785123966942
+    "index":0.034782608695652174
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|regFifo",
     "duplicate":"~system|system/core0:system_Anon/fetch:fetch/PC_fifo:regFifo",
-    "index":0.04132231404958678
+    "index":0.043478260869565216
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|fetch",
     "duplicate":"~system|system/core0:system_Anon/fetch:fetch",
-    "index":0.049586776859504134
+    "index":0.05217391304347826
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|storeDataIssue_Anon",
     "duplicate":"~system|system/core0:system_Anon/dataQueue:storeDataIssue/sdiFifo:storeDataIssue_Anon",
-    "index":0.06611570247933884
+    "index":0.06956521739130435
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|storeDataIssue",
     "duplicate":"~system|system/core0:system_Anon/dataQueue:storeDataIssue",
-    "index":0.0743801652892562
+    "index":0.0782608695652174
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob_Anon",
     "duplicate":"~system|system/core0:system_Anon/rob:rob/fifo:rob_Anon",
-    "index":0.08264462809917356
+    "index":0.08695652173913043
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob_Anon_1",
     "duplicate":"~system|system/core0:system_Anon/rob:rob/results:rob_Anon_1",
-    "index":0.09090909090909091
+    "index":0.09565217391304348
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob",
     "duplicate":"~system|system/core0:system_Anon/rob:rob",
-    "index":0.09917355371900827
+    "index":0.10434782608695652
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|scheduler",
     "duplicate":"~system|system/core0:system_Anon/scheduler:scheduler",
-    "index":0.10743801652892562
+    "index":0.11304347826086956
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|Scheduler",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/requestScheduler:Scheduler",
-    "index":0.11570247933884298
+    "index":0.12173913043478261
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/dataBRAM_0:CacheGenModule",
-    "index":0.12396694214876033
+    "index":0.13043478260869565
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_1",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/dataBRAM_1:CacheGenModule",
-    "index":0.1322314049586777
+    "index":0.1391304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_2",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/dataBRAM_2:CacheGenModule",
-    "index":0.14049586776859505
+    "index":0.14782608695652175
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_3",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/dataBRAM_3:CacheGenModule",
-    "index":0.1487603305785124
+    "index":0.1565217391304348
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_4",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/tagBRAM:CacheGenModule_4",
-    "index":0.15702479338842976
+    "index":0.16521739130434782
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/delayCounter:CounterModule",
-    "index":0.1652892561983471
+    "index":0.17391304347826086
   },
   {
     "class":"firrtl.transforms.DedupedResult",
@@ -122,271 +122,271 @@
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|commitFifo",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup/commitFifo:commitFifo",
-    "index":0.18181818181818182
+    "index":0.19130434782608696
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|cacheLookup",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/cacheLookup:cacheLookup",
-    "index":0.19008264462809918
+    "index":0.2
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_1",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/peripheralAXIUnit:AXIUnit/readCounter:CounterModule_1",
-    "index":0.19834710743801653
+    "index":0.20869565217391303
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_2",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/peripheralAXIUnit:AXIUnit/writeCounter:CounterModule_1",
-    "index":0.2066115702479339
+    "index":0.21739130434782608
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|writeDataInFifo",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/writeDataInFifo:writeDataInFifo",
-    "index":0.2231404958677686
+    "index":0.23478260869565218
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_3",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/memoryAXIUnit:ACEUnit/readCounter:CounterModule_3",
-    "index":0.23140495867768596
+    "index":0.24347826086956523
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_4",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/memoryAXIUnit:ACEUnit/writeCounter:CounterModule_3",
-    "index":0.2396694214876033
+    "index":0.25217391304347825
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_5",
     "duplicate":"~system|system/core0:system_Anon/memAccess:core_Anon_1/memoryAXIUnit:ACEUnit/coherentCounter:CounterModule_3",
-    "index":0.24793388429752067
+    "index":0.2608695652173913
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s1:LVT_set/b1:ReadWriteSmem",
-    "index":0.2727272727272727
+    "index":0.28695652173913044
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_1",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s1:LVT_set/b2:ReadWriteSmem",
-    "index":0.2809917355371901
+    "index":0.2956521739130435
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_2",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s1:LVT_set/b3:ReadWriteSmem",
-    "index":0.2892561983471074
+    "index":0.30434782608695654
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s1:LVT_set",
-    "index":0.2975206611570248
+    "index":0.3130434782608696
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_3",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s2:LVT_set/b1:ReadWriteSmem",
-    "index":0.30578512396694213
+    "index":0.3217391304347826
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_4",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s2:LVT_set/b2:ReadWriteSmem",
-    "index":0.3140495867768595
+    "index":0.33043478260869563
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_5",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s2:LVT_set/b3:ReadWriteSmem",
-    "index":0.32231404958677684
+    "index":0.3391304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_1",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s2:LVT_set",
-    "index":0.3305785123966942
+    "index":0.34782608695652173
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_6",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s3:LVT_set/b1:ReadWriteSmem",
-    "index":0.33884297520661155
+    "index":0.3565217391304348
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_7",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s3:LVT_set/b2:ReadWriteSmem",
-    "index":0.34710743801652894
+    "index":0.3652173913043478
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_8",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s3:LVT_set/b3:ReadWriteSmem",
-    "index":0.35537190082644626
+    "index":0.3739130434782609
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_2",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s3:LVT_set",
-    "index":0.36363636363636365
+    "index":0.3826086956521739
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_9",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s4:LVT_set/b1:ReadWriteSmem",
-    "index":0.371900826446281
+    "index":0.391304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_10",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s4:LVT_set/b2:ReadWriteSmem",
-    "index":0.38016528925619836
+    "index":0.4
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_11",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s4:LVT_set/b3:ReadWriteSmem",
-    "index":0.3884297520661157
+    "index":0.40869565217391307
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_3",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem/s4:LVT_set",
-    "index":0.39669421487603307
+    "index":0.41739130434782606
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_Mem",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF/prf:LVT_Mem",
-    "index":0.4049586776859504
+    "index":0.4260869565217391
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|PRF",
     "duplicate":"~system|system/core0:system_Anon/prf:PRF",
-    "index":0.4132231404958678
+    "index":0.43478260869565216
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|iCacheRegisters_1",
     "duplicate":"~system|system/core1:system_Anon_1/icache:iCache_1/cache:iCacheRegisters",
-    "index":0.4297520661157025
+    "index":0.45217391304347826
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|shiftReg_1",
     "duplicate":"~system|system/core1:system_Anon_1/fetch:fetch/predictor:gshare_predictor/correct_history:shiftReg",
-    "index":0.4462809917355372
+    "index":0.46956521739130436
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|updateShiftReg_1",
     "duplicate":"~system|system/core1:system_Anon_1/fetch:fetch/predictor:gshare_predictor/predicted_history:updateShiftReg",
-    "index":0.45454545454545453
+    "index":0.4782608695652174
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|gshare_predictor_1",
     "duplicate":"~system|system/core1:system_Anon_1/fetch:fetch/predictor:gshare_predictor",
-    "index":0.4628099173553719
+    "index":0.48695652173913045
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|regFifo_1",
     "duplicate":"~system|system/core1:system_Anon_1/fetch:fetch/PC_fifo:regFifo",
-    "index":0.47107438016528924
+    "index":0.4956521739130435
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|fetch_1",
     "duplicate":"~system|system/core1:system_Anon_1/fetch:fetch",
-    "index":0.4793388429752066
+    "index":0.5043478260869565
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|storeDataIssue_Anon_1",
     "duplicate":"~system|system/core1:system_Anon_1/dataQueue:storeDataIssue/sdiFifo:storeDataIssue_Anon",
-    "index":0.49586776859504134
+    "index":0.5217391304347826
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|storeDataIssue_1",
     "duplicate":"~system|system/core1:system_Anon_1/dataQueue:storeDataIssue",
-    "index":0.5041322314049587
+    "index":0.5304347826086957
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob_Anon_2",
     "duplicate":"~system|system/core1:system_Anon_1/rob:rob/fifo:rob_Anon",
-    "index":0.512396694214876
+    "index":0.5391304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob_Anon_3",
     "duplicate":"~system|system/core1:system_Anon_1/rob:rob/results:rob_Anon_1",
-    "index":0.5206611570247934
+    "index":0.5478260869565217
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|rob_1",
     "duplicate":"~system|system/core1:system_Anon_1/rob:rob",
-    "index":0.5289256198347108
+    "index":0.5565217391304348
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|scheduler_1",
     "duplicate":"~system|system/core1:system_Anon_1/scheduler:scheduler",
-    "index":0.5371900826446281
+    "index":0.5652173913043478
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|Scheduler_1",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/requestScheduler:Scheduler",
-    "index":0.5454545454545454
+    "index":0.5739130434782609
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_5",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/dataBRAM_0:CacheGenModule",
-    "index":0.5537190082644629
+    "index":0.5826086956521739
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_6",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/dataBRAM_1:CacheGenModule",
-    "index":0.5619834710743802
+    "index":0.591304347826087
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_7",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/dataBRAM_2:CacheGenModule",
-    "index":0.5702479338842975
+    "index":0.6
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_8",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/dataBRAM_3:CacheGenModule",
-    "index":0.5785123966942148
+    "index":0.6086956521739131
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CacheGenModule_9",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/tagBRAM:CacheGenModule_4",
-    "index":0.5867768595041323
+    "index":0.6173913043478261
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_6",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/delayCounter:CounterModule",
-    "index":0.5950413223140496
+    "index":0.6260869565217392
   },
   {
     "class":"firrtl.transforms.DedupedResult",
@@ -397,157 +397,157 @@
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|commitFifo_1",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup/commitFifo:commitFifo",
-    "index":0.6115702479338843
+    "index":0.6434782608695652
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|cacheLookup_1",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/cacheLookup:cacheLookup",
-    "index":0.6198347107438017
+    "index":0.6521739130434783
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_7",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/peripheralAXIUnit:AXIUnit_1/readCounter:CounterModule_1",
-    "index":0.628099173553719
+    "index":0.6608695652173913
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_8",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/peripheralAXIUnit:AXIUnit_1/writeCounter:CounterModule_1",
-    "index":0.6363636363636364
+    "index":0.6695652173913044
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|writeDataInFifo_1",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/writeDataInFifo:writeDataInFifo",
-    "index":0.6528925619834711
+    "index":0.6869565217391305
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_9",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/memoryAXIUnit:ACEUnit_1/readCounter:CounterModule_3",
-    "index":0.6611570247933884
+    "index":0.6956521739130435
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_10",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/memoryAXIUnit:ACEUnit_1/writeCounter:CounterModule_3",
-    "index":0.6694214876033058
+    "index":0.7043478260869566
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|CounterModule_11",
     "duplicate":"~system|system/core1:system_Anon_1/memAccess:core_Anon_3/memoryAXIUnit:ACEUnit_1/coherentCounter:CounterModule_3",
-    "index":0.6776859504132231
+    "index":0.7130434782608696
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_12",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s1:LVT_set/b1:ReadWriteSmem",
-    "index":0.7024793388429752
+    "index":0.7391304347826086
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_13",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s1:LVT_set/b2:ReadWriteSmem",
-    "index":0.7107438016528925
+    "index":0.7478260869565218
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_14",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s1:LVT_set/b3:ReadWriteSmem",
-    "index":0.71900826446281
+    "index":0.7565217391304347
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_4",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s1:LVT_set",
-    "index":0.7272727272727273
+    "index":0.7652173913043478
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_15",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s2:LVT_set/b1:ReadWriteSmem",
-    "index":0.7355371900826446
+    "index":0.7739130434782608
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_16",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s2:LVT_set/b2:ReadWriteSmem",
-    "index":0.743801652892562
+    "index":0.782608695652174
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_17",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s2:LVT_set/b3:ReadWriteSmem",
-    "index":0.7520661157024794
+    "index":0.7913043478260869
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_5",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s2:LVT_set",
-    "index":0.7603305785123967
+    "index":0.8
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_18",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s3:LVT_set/b1:ReadWriteSmem",
-    "index":0.768595041322314
+    "index":0.808695652173913
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_19",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s3:LVT_set/b2:ReadWriteSmem",
-    "index":0.7768595041322314
+    "index":0.8173913043478261
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_20",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s3:LVT_set/b3:ReadWriteSmem",
-    "index":0.7851239669421488
+    "index":0.8260869565217391
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_6",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s3:LVT_set",
-    "index":0.7933884297520661
+    "index":0.8347826086956521
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_21",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s4:LVT_set/b1:ReadWriteSmem",
-    "index":0.8016528925619835
+    "index":0.8434782608695652
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_22",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s4:LVT_set/b2:ReadWriteSmem",
-    "index":0.8099173553719008
+    "index":0.8521739130434782
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|ReadWriteSmem_23",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s4:LVT_set/b3:ReadWriteSmem",
-    "index":0.8181818181818182
+    "index":0.8608695652173913
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_set_7",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem/s4:LVT_set",
-    "index":0.8264462809917356
+    "index":0.8695652173913043
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|LVT_Mem_1",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF/prf:LVT_Mem",
-    "index":0.8347107438016529
+    "index":0.8782608695652174
   },
   {
     "class":"firrtl.transforms.DedupedResult",
     "original":"~system|PRF_1",
     "duplicate":"~system|system/core1:system_Anon_1/prf:PRF",
-    "index":0.8429752066115702
+    "index":0.8869565217391304
   },
   {
     "class":"firrtl.EmitCircuitAnnotation",

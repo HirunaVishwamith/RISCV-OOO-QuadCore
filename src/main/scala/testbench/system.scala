@@ -15,7 +15,7 @@ import decode.constants
 import dataclass.data
 import _root_.testbench.simulatedMemory
 import Interconnect._
-import l2_cache._
+import LLC_cache._
 
 
 class system extends Module {
@@ -71,7 +71,7 @@ class system extends Module {
 
   val memory = Module(new mainMemory)
   val interconnect = Module(new Interconnect)
-  val LLC = Module(new l2_mem) 
+  val LLC = Module(new LLC_cache) 
 
   //core's IOS
   //iPort ACE, dPort ACE, peripheral port AXI, MTIP
@@ -299,11 +299,10 @@ class system extends Module {
   //Interconnect L2 connection to Memory
 
   //AW
-  LLC.io.cache_axi.AWVALID := interconnect.io.L2.AWVALID
-  interconnect.io.L2.AWREADY := LLC.io.cache_axi.AWREADY
-  LLC.io.cache_axi.AWID := interconnect.io.L2.AWID
-  LLC.io.cache_axi.AWADDR := interconnect.io.L2.AWADDR
-  LLC.io.cache_axi.AWLEN := 7.U
+  LLC.io.axi.AWVALID := interconnect.io.L2.AWVALID
+  interconnect.io.L2.AWREADY := LLC.io.axi.AWREADY
+  LLC.io.axi.AWID := interconnect.io.L2.AWID
+  LLC.io.axi.AWADDR := interconnect.io.L2.AWADDR
 
   /*
   memory.clients(1).AWSNOOP := 0.U
@@ -319,11 +318,10 @@ class system extends Module {
   */
 
   //AR
-  LLC.io.cache_axi.ARVALID := interconnect.io.L2.ARVALID
-  interconnect.io.L2.ARREADY := LLC.io.cache_axi.ARREADY
-  LLC.io.cache_axi.ARID := interconnect.io.L2.ARID
-  LLC.io.cache_axi.ARADDR := interconnect.io.L2.ARADDR
-  LLC.io.cache_axi.ARLEN := 7.U
+  LLC.io.axi.ARVALID := interconnect.io.L2.ARVALID
+  interconnect.io.L2.ARREADY := LLC.io.axi.ARREADY
+  LLC.io.axi.ARID := interconnect.io.L2.ARID
+  LLC.io.axi.ARADDR := interconnect.io.L2.ARADDR
 
   /*
   memory.clients(1).ARSNOOP := 0.U
@@ -339,26 +337,26 @@ class system extends Module {
   */
 
   //W
-  LLC.io.cache_axi.WVALID := interconnect.io.L2.WVALID
-  interconnect.io.L2.WREADY := LLC.io.cache_axi.WREADY
-  LLC.io.cache_axi.WDATA := interconnect.io.L2.WDATA
-  LLC.io.cache_axi.WLAST := interconnect.io.L2.WLAST
+  LLC.io.axi.WVALID := interconnect.io.L2.WVALID
+  interconnect.io.L2.WREADY := LLC.io.axi.WREADY
+  LLC.io.axi.WDATA := interconnect.io.L2.WDATA
+  LLC.io.axi.WLAST := interconnect.io.L2.WLAST
   //leon
   //memory.clients(1).WSTRB := "b11111111".U
 
   //R
-  interconnect.io.L2.RVALID := LLC.io.cache_axi.RVALID
-  LLC.io.cache_axi.RREADY := interconnect.io.L2.RREADY
-  interconnect.io.L2.RID := LLC.io.cache_axi.RID
-  interconnect.io.L2.RDATA := LLC.io.cache_axi.RDATA
-  interconnect.io.L2.RLAST := LLC.io.cache_axi.RLAST
-  interconnect.io.L2.RRESP := LLC.io.cache_axi.RRESP
+  interconnect.io.L2.RVALID := LLC.io.axi.RVALID
+  LLC.io.axi.RREADY := interconnect.io.L2.RREADY
+  interconnect.io.L2.RID := LLC.io.axi.RID
+  interconnect.io.L2.RDATA := LLC.io.axi.RDATA
+  interconnect.io.L2.RLAST := LLC.io.axi.RLAST
+  interconnect.io.L2.RRESP := LLC.io.axi.RRESP
 
   //B
-  interconnect.io.L2.BVALID := LLC.io.cache_axi.BVALID
-  LLC.io.cache_axi.BREADY := interconnect.io.L2.BREADY
-  interconnect.io.L2.BID := LLC.io.cache_axi.BID
-  interconnect.io.L2.BRESP := LLC.io.cache_axi.BRESP
+  interconnect.io.L2.BVALID := LLC.io.axi.BVALID
+  LLC.io.axi.BREADY := interconnect.io.L2.BREADY
+  interconnect.io.L2.BID := LLC.io.axi.BID
+  interconnect.io.L2.BRESP := LLC.io.axi.BRESP
 
 
   /*
@@ -379,52 +377,52 @@ class system extends Module {
 
   //LLC connection with memory
   //AW
-  memory.clients(1).AWVALID := LLC.io.mem_write_axi.AWVALID
-  memory.clients(1).AWID := LLC.io.mem_write_axi.AWID
-  memory.clients(1).AWADDR := LLC.io.mem_write_axi.AWADDR
-  memory.clients(1).AWLEN := LLC.io.mem_write_axi.AWLEN
-  memory.clients(1).AWSIZE := LLC.io.mem_write_axi.AWSIZE
-  memory.clients(1).AWBURST := LLC.io.mem_write_axi.AWBURST
-  memory.clients(1).AWLOCK := LLC.io.mem_write_axi.AWLOCK
-  memory.clients(1).AWCACHE := LLC.io.mem_write_axi.AWCACHE
-  memory.clients(1).AWPROT := LLC.io.mem_write_axi.AWPROT
-  memory.clients(1).AWQOS := LLC.io.mem_write_axi.AWQOS
-  LLC.io.mem_write_axi.AWREADY := memory.clients(1).AWREADY
+  memory.clients(1).AWVALID := LLC.io.mem_axi.AWVALID
+  memory.clients(1).AWID := LLC.io.mem_axi.AWID
+  memory.clients(1).AWADDR := LLC.io.mem_axi.AWADDR
+  memory.clients(1).AWLEN := LLC.io.mem_axi.AWLEN
+  memory.clients(1).AWSIZE := LLC.io.mem_axi.AWSIZE
+  memory.clients(1).AWBURST := LLC.io.mem_axi.AWBURST
+  memory.clients(1).AWLOCK := LLC.io.mem_axi.AWLOCK
+  memory.clients(1).AWCACHE := LLC.io.mem_axi.AWCACHE
+  memory.clients(1).AWPROT := LLC.io.mem_axi.AWPROT
+  memory.clients(1).AWQOS := LLC.io.mem_axi.AWQOS
+  LLC.io.mem_axi.AWREADY := memory.clients(1).AWREADY
 
   //AR
-  memory.clients(1).ARVALID := LLC.io.mem_read_axi.ARVALID
-  memory.clients(1).ARID := LLC.io.mem_read_axi.ARID
-  memory.clients(1).ARADDR := LLC.io.mem_read_axi.ARADDR
-  memory.clients(1).ARLEN := LLC.io.mem_read_axi.ARLEN
-  memory.clients(1).ARSIZE := LLC.io.mem_read_axi.ARSIZE
-  memory.clients(1).ARBURST := LLC.io.mem_read_axi.ARBURST
-  memory.clients(1).ARLOCK := LLC.io.mem_read_axi.ARLOCK
-  memory.clients(1).ARCACHE := LLC.io.mem_read_axi.ARCACHE
-  memory.clients(1).ARPROT := LLC.io.mem_read_axi.ARPROT
-  memory.clients(1).ARQOS := LLC.io.mem_read_axi.ARQOS
-  LLC.io.mem_read_axi.ARREADY := memory.clients(1).ARREADY
+  memory.clients(1).ARVALID := LLC.io.mem_axi.ARVALID
+  memory.clients(1).ARID := LLC.io.mem_axi.ARID
+  memory.clients(1).ARADDR := LLC.io.mem_axi.ARADDR
+  memory.clients(1).ARLEN := LLC.io.mem_axi.ARLEN
+  memory.clients(1).ARSIZE := LLC.io.mem_axi.ARSIZE
+  memory.clients(1).ARBURST := LLC.io.mem_axi.ARBURST
+  memory.clients(1).ARLOCK := LLC.io.mem_axi.ARLOCK
+  memory.clients(1).ARCACHE := LLC.io.mem_axi.ARCACHE
+  memory.clients(1).ARPROT := LLC.io.mem_axi.ARPROT
+  memory.clients(1).ARQOS := LLC.io.mem_axi.ARQOS
+  LLC.io.mem_axi.ARREADY := memory.clients(1).ARREADY
 
   //W
-  memory.clients(1).WVALID := LLC.io.mem_write_axi.WVALID
-  memory.clients(1).WDATA := LLC.io.mem_write_axi.WDATA
-  memory.clients(1).WLAST := LLC.io.mem_write_axi.WLAST
-  memory.clients(1).WSTRB := LLC.io.mem_write_axi.WSTRB
-  LLC.io.mem_write_axi.WREADY := memory.clients(1).WREADY
+  memory.clients(1).WVALID := LLC.io.mem_axi.WVALID
+  memory.clients(1).WDATA := LLC.io.mem_axi.WDATA
+  memory.clients(1).WLAST := LLC.io.mem_axi.WLAST
+  memory.clients(1).WSTRB := LLC.io.mem_axi.WSTRB
+  LLC.io.mem_axi.WREADY := memory.clients(1).WREADY
 
   //R
-  memory.clients(1).RREADY := LLC.io.mem_read_axi.RREADY
-  LLC.io.mem_read_axi.RID := memory.clients(1).RID
-  LLC.io.mem_read_axi.RDATA := memory.clients(1).RDATA
-  LLC.io.mem_read_axi.RRESP := memory.clients(1).RRESP
-  LLC.io.mem_read_axi.RLAST := memory.clients(1).RLAST
-  LLC.io.mem_read_axi.RVALID := memory.clients(1).RVALID
+  memory.clients(1).RREADY := LLC.io.mem_axi.RREADY
+  LLC.io.mem_axi.RID := memory.clients(1).RID
+  LLC.io.mem_axi.RDATA := memory.clients(1).RDATA
+  LLC.io.mem_axi.RRESP := memory.clients(1).RRESP
+  LLC.io.mem_axi.RLAST := memory.clients(1).RLAST
+  LLC.io.mem_axi.RVALID := memory.clients(1).RVALID
 
 
   //B
-  memory.clients(1).BREADY := LLC.io.mem_write_axi.BREADY
-  LLC.io.mem_write_axi.BVALID := memory.clients(1).BVALID
-  LLC.io.mem_write_axi.BRESP := memory.clients(1).BRESP
-  LLC.io.mem_write_axi.BID := 0.U
+  memory.clients(1).BREADY := LLC.io.mem_axi.BREADY
+  LLC.io.mem_axi.BVALID := memory.clients(1).BVALID
+  LLC.io.mem_axi.BRESP := memory.clients(1).BRESP
+  LLC.io.mem_axi.BID := 0.U
 
 
 

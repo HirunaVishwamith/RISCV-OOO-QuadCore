@@ -5,6 +5,7 @@
 #include "verilated_vcd_c.h"
 #include <fstream>
 #include <iterator>
+#include <inttypes.h>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -49,13 +50,14 @@ class simulator {
 
   public:
 
-  uint64_t  prev_pc;
+  uint64_t  prev_pc_core0;
+  uint64_t prev_pc_core1;
   unsigned long        tickcount;
   unsigned dump_tick;
   std::string accumulatedChars0;
   std::string accumulatedChars1;
 
-  __uint64_t get_register_value(__uint8_t rd) {
+  __uint64_t get_register_value_core0(__uint8_t rd) {
     switch (rd) {
     case 0:
       return tb -> registersOut0_0;
@@ -127,6 +129,78 @@ class simulator {
   }
 
 
+  __uint64_t get_register_value_core1(__uint8_t rd) {
+    switch (rd) {
+    case 0:
+      return tb -> registersOut1_0;
+    case 1:
+      return tb -> registersOut1_1;
+    case 2:
+      return tb -> registersOut1_2;
+    case 3:
+      return tb -> registersOut1_3;
+    case 4:
+      return tb -> registersOut1_4;
+    case 5:
+      return tb -> registersOut1_5;
+    case 6:
+      return tb -> registersOut1_6;
+    case 7:
+      return tb -> registersOut1_7;
+    case 8:
+      return tb -> registersOut1_8;
+    case 9:
+      return tb -> registersOut1_9;
+    case 10:
+      return tb -> registersOut1_10;
+    case 11:
+      return tb -> registersOut1_11;
+    case 12:
+      return tb -> registersOut1_12;
+    case 13:
+      return tb -> registersOut1_13;
+    case 14:
+      return tb -> registersOut1_14;
+    case 15:
+      return tb -> registersOut1_15;
+    case 16:
+      return tb -> registersOut1_16;
+    case 17:
+      return tb -> registersOut1_17;
+    case 18:
+      return tb -> registersOut1_18;
+    case 19:
+      return tb -> registersOut1_19;
+    case 20:
+      return tb -> registersOut1_20;
+    case 21:
+      return tb -> registersOut1_21;
+    case 22:
+      return tb -> registersOut1_22;
+    case 23:
+      return tb -> registersOut1_23;
+    case 24:
+      return tb -> registersOut1_24;
+    case 25:
+      return tb -> registersOut1_25;
+    case 26:
+      return tb -> registersOut1_26;
+    case 27:
+      return tb -> registersOut1_27;
+    case 28:
+      return tb -> registersOut1_28;
+    case 29:
+      return tb -> registersOut1_29;
+    case 30:
+      return tb -> registersOut1_30;
+    case 31:
+      return tb -> registersOut1_31;
+    default:
+      return 0;
+    }
+  }
+
+
   __uint32_t waitForCore() {
 #ifdef CORE_BOOT_WAIT
     if (!(tb -> waitingForCore_waiting)) {
@@ -185,7 +259,7 @@ class simulator {
       // if (progress != (i*100)/buffer.size()) 
       printf("Kernel Loaded: %ld \%\r", (i*100)/buffer.size());		
 		}
-    printf("done\n");
+    printf("done \n");
     // printf("loading dtb\n");
     // ifstream dtb_input(dtb_name, ios::binary);
 		// //printf("Running test for : ");
@@ -224,14 +298,16 @@ class simulator {
 		tb ->finishedProgramming = 0;
     tb ->programmer_valid = 0;
     tick(++dump_tick, tb, tfp); //here it is tick_nodump
-    // prev_pc = 0x80000000UL;
-    prev_pc = 0x10000000UL;
+    // prev_pc_core0 = 0x80000000UL;
+    prev_pc_core0 = 0x10000000UL;
+    prev_pc_core1 = 0x10000000UL;
+    printf("prev_pc_core0: 0x%lx\n", prev_pc_core0);
   }
 
   int step() {
     /* while (1) { // runs until a instruction is completed
       if (tb -> robOut_commitFired){
-        prev_pc = tb -> robOut_pc;
+        prev_pc_core0 = tb -> robOut_pc;
         tick_nodump(++tickcount, tb, tfp);
         if (tb ->putChar_valid) { cout << (char)(tb -> putChar_byte) << flush; }
         break;
@@ -243,35 +319,59 @@ class simulator {
     } */
     tick(++dump_tick, tb, tfp);
     #ifndef STEP_TIMEOUT
-    while (!(tb -> robOut0_commitFired)) {
+    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) {
     #else
-    for (int i = 0; !(tb -> robOut0_commitFired) && i < STEP_TIMEOUT; i++) {
+    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) && i < STEP_TIMEOUT; i++) {
     #endif
     #ifdef SHOW_TERMINAL
     // if (tb ->core0OutChar_valid) { cout<<(char)(tb -> core0OutChar_byte)<<flush;}
     // if (tb ->core1OutChar_valid) { cout<< (char)(tb -> core1OutChar_byte)<<flush;}
-
     if (tb ->core0OutChar_valid) { accumulatedChars0 += (char)(tb -> core0OutChar_byte);}
     if (tb ->core1OutChar_valid) { accumulatedChars1 += (char)(tb -> core1OutChar_byte);}
 
     #endif
       tick(++dump_tick, tb, tfp);
-          }
+      //printf("Flags: %d %d\n", tb -> robOut0_commitFired, tb -> robOut1_commitFired);
+      //printf("prev_pc_core0: 0x%lx\n", tb -> robOut0_pc);
+      //printf("prev_pc_core1: 0x%lx\n", tb -> robOut1_pc);
+      //printf("leon \n");
+   }
+
+    //printf("leon prev_pc_core0: 0x%lx\n", prev_pc_core0);
+    //printf("leoni prev_pc_core0: 0x%lx\n", tb -> robOut0_pc);
+  
+    //printf("Flags out: %d %d\n", tb -> robOut0_commitFired, tb -> robOut1_commitFired);
+    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 5; }
+        //printf("leon1 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        //printf("leon1 prev_pc_core1: 0x%lx\n", prev_pc_core1);
+        return 3;
+    }else if(tb -> robOut0_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
+        //printf("leon2 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        return 0;
+    }else if(tb -> robOut1_commitFired){
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 5; }
+        //printf("leon3 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        return 4;
+    }else{
+        printf("TIMEOUT IN SIMULATOR!!!\n");
+        return 1;
+    }
+
     
-    // #ifdef SHOW_TERMINAL
-    //  if (tb ->core0OutChar_valid) { cout<< (char)(tb -> core0OutChar_byte+98); cout.flush();}
-    //  if (tb ->core1OutChar_valid) { cout<< (char)(tb -> core1OutChar_byte+98); cout.flush();}
-    // #endif
-    // return 1 indicate timeout
-    prev_pc = tb -> robOut0_pc;
-    if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-    if (tb -> robOut0_commitFired) { return 0; } else { printf("TIMEOUT IN SIMULATOR!!!\n"); return 1; }
+
   }
 
   int step_nodump() {
     /* while (1) { // runs until a instruction is completed
       if (tb -> robOut_commitFired){
-        prev_pc = tb -> robOut_pc;
+        prev_pc_core0 = tb -> robOut_pc;
         tick_nodump(++tickcount, tb, tfp);
         if (tb ->putChar_valid) { cout << (char)(tb -> putChar_byte) << flush; }
         break;
@@ -283,26 +383,52 @@ class simulator {
     } */
     tick(++dump_tick, tb, tfp); //this tick_nodump
     #ifndef STEP_TIMEOUT
-    while (!(tb -> robOut0_commitFired)) {
+    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) {
     #else
-    for (int i = 0; !(tb -> robOut0_commitFired) && i < STEP_TIMEOUT; i++) {
+    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired))&& i < STEP_TIMEOUT; i++) {
     #endif
     #ifdef SHOW_TERMINAL
       //if (tb ->putChar_valid) { cout << tb -> putChar_byte << flush; }
     #endif
       tick(++dump_tick, tb, tfp); //here it tick_nodump
+      //printf("prev_pc_core0: 0x%lx\n", prev_pc_core0);
           }
     
     #ifdef SHOW_TERMINAL
     //if (tb ->putChar_valid) { cout << tb -> putChar_byte << flush; }
     #endif
+
+    //printf("leon prev_pc_core0: 0x%lx\n", prev_pc_core0);
+
     // return 1 indicate timeout
-    prev_pc = tb -> robOut0_pc;
-    if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-    if (tb -> robOut0_commitFired) { return 0; } else { printf("TIMEOUT IN SIMULATOR!!!\n"); return 1; }
+
+    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 2; }
+        //printf("leon1 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        //printf("leon1 prev_pc_core1: 0x%lx\n", prev_pc_core1);
+        return 0;
+    }else if(tb -> robOut0_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
+        //printf("leon2 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        return 0;
+    }else if(tb -> robOut1_commitFired){
+        prev_pc_core1 = tb -> robOut0_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 2; }
+        //printf("leon3 prev_pc_core0: 0x%lx\n", prev_pc_core0);
+        return 0;
+    }else{
+        //printf("TIMEOUT IN SIMULATOR!!!\n");
+        return 1;
+    }
+
+
   }
 
-  int check_registers(std::vector<uint64_t> correct, uint64_t mstatus) {
+  int check_registers_core0(std::vector<uint64_t> correct, uint64_t mstatus) {
     if ( tb -> registersOut0_1 != correct[1] ) { return 1; }
     if ( tb -> registersOut0_2 != correct[2] ) { return 2; }
     if ( tb -> registersOut0_3 != correct[3] ) { return 3; }
@@ -338,12 +464,50 @@ class simulator {
     return 0;
   }
 
+
+  int check_registers_core1(std::vector<uint64_t> correct, uint64_t mstatus) {
+    if ( tb -> registersOut1_1 != correct[1] ) { return 1; }
+    if ( tb -> registersOut1_2 != correct[2] ) { return 2; }
+    if ( tb -> registersOut1_3 != correct[3] ) { return 3; }
+    if ( tb -> registersOut1_4 != correct[4] ) { return 4; }
+    if ( tb -> registersOut1_5 != correct[5] ) { return 5; }
+    if ( tb -> registersOut1_6 != correct[6] ) { return 6; }
+    if ( tb -> registersOut1_7 != correct[7] ) { return 7; }
+    if ( tb -> registersOut1_8 != correct[8] ) { return 8; }
+    if ( tb -> registersOut1_9 != correct[9] ) { return 9; }
+    if ( tb -> registersOut1_10 != correct[10] ) { return 10; }
+    if ( tb -> registersOut1_11 != correct[11] ) { return 11; }
+    if ( tb -> registersOut1_12 != correct[12] ) { return 12; }
+    if ( tb -> registersOut1_13 != correct[13] ) { return 13; }
+    if ( tb -> registersOut1_14 != correct[14] ) { return 14; }
+    if ( tb -> registersOut1_15 != correct[15] ) { return 15; }
+    if ( tb -> registersOut1_16 != correct[16] ) { return 16; }
+    if ( tb -> registersOut1_17 != correct[17] ) { return 17; }
+    if ( tb -> registersOut1_18 != correct[18] ) { return 18; }
+    if ( tb -> registersOut1_19 != correct[19] ) { return 19; }
+    if ( tb -> registersOut1_20 != correct[20] ) { return 20; }
+    if ( tb -> registersOut1_21 != correct[21] ) { return 21; }
+    if ( tb -> registersOut1_22 != correct[22] ) { return 22; }
+    if ( tb -> registersOut1_23 != correct[23] ) { return 23; }
+    if ( tb -> registersOut1_24 != correct[24] ) { return 24; }
+    if ( tb -> registersOut1_25 != correct[25] ) { return 25; }
+    if ( tb -> registersOut1_26 != correct[26] ) { return 26; }
+    if ( tb -> registersOut1_27 != correct[27] ) { return 27; }
+    if ( tb -> registersOut1_28 != correct[28] ) { return 28; }
+    if ( tb -> registersOut1_29 != correct[29] ) { return 29; }
+    if ( tb -> registersOut1_30 != correct[30] ) { return 30; }
+    if ( tb -> registersOut1_31 != correct[31] ) { return 31; }
+    if ( tb -> registersOut1_32 != mstatus) { return 32; }
+    return 0;
+  }
+
+
   
 
   void set_probe(unsigned long address) { tb -> prober_offset = address; }
   unsigned long get_probe() { return tb -> prober_accessLong; }
 
-  __uint64_t read_register(int rs) {
+  __uint64_t read_register_core0(int rs) {
     switch (rs)
     {
     case 0:
@@ -444,6 +608,113 @@ class simulator {
     
     case 32:
       return tb -> registersOut0_32;
+    
+    default:
+      return 0UL;
+    }
+  }
+
+  __uint64_t read_register_core1(int rs) {
+    switch (rs)
+    {
+    case 0:
+      return 0UL;
+    
+    case 1:
+      return tb -> registersOut1_1;
+
+    case 2:
+      return tb -> registersOut1_2;
+
+    case 3:
+      return tb -> registersOut1_3;
+
+    case 4:
+      return tb -> registersOut1_4;
+
+    case 5:
+      return tb -> registersOut1_5;
+
+    case 6:
+      return tb -> registersOut1_6;
+
+    case 7:
+      return tb -> registersOut1_7;
+
+    case 8:
+      return tb -> registersOut1_8;
+
+    case 9:
+      return tb -> registersOut1_9;
+
+    case 10:
+      return tb -> registersOut1_10;
+    
+    case 11:
+      return tb -> registersOut1_11;
+
+    case 12:
+      return tb -> registersOut1_12;
+
+    case 13:
+      return tb -> registersOut1_13;
+
+    case 14:
+      return tb -> registersOut1_14;
+
+    case 15:
+      return tb -> registersOut1_15;
+
+    case 16:
+      return tb -> registersOut1_16;
+
+    case 17:
+      return tb -> registersOut1_17;
+
+    case 18:
+      return tb -> registersOut1_18;
+
+    case 19:
+      return tb -> registersOut1_19;
+    
+    case 20:
+      return tb -> registersOut1_20;
+    
+    case 21:
+      return tb -> registersOut1_21;
+
+    case 22:
+      return tb -> registersOut1_22;
+
+    case 23:
+      return tb -> registersOut1_23;
+
+    case 24:
+      return tb -> registersOut1_24;
+
+    case 25:
+      return tb -> registersOut1_25;
+
+    case 26:
+      return tb -> registersOut1_26;
+
+    case 27:
+      return tb -> registersOut1_27;
+
+    case 28:
+      return tb -> registersOut1_28;
+
+    case 29:
+      return tb -> registersOut1_29;
+    
+    case 30:
+      return tb -> registersOut1_30;
+    
+    case 31:
+      return tb -> registersOut1_31;
+    
+    case 32:
+      return tb -> registersOut1_32;
     
     default:
       return 0UL;
