@@ -3,3 +3,12 @@ obj_dir/
 .bloop/
 .vscode/
 target/
+vivado/
+project/
+*.v
+*.json
+*.fir
+Image
+Image1
+*.out
+*.log
