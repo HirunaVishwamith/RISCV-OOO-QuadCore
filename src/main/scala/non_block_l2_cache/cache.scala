@@ -4,18 +4,17 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.BundleLiterals._
 
-class CacheLine(n_way: Int=4 , mem_size : Int=13) extends Bundle {
+class CacheLine(n_way: Int=4) extends Bundle {
   val state = UInt((n_way-1).W)
   val valid = Vec(n_way,Bool())
-  val tag = Vec(n_way,UInt((24-mem_size+log2Ceil(n_way)).W))
+  val tag = Vec(n_way,UInt(13.W))
   val data = Vec(n_way,Vec(4, UInt(512.W))) // 256 bytes of data
   val dirty = Vec(n_way,Bool())
 }
 
 class Memory (
   addressWidth : Int=32,
-  n_way : Int=4,    //4
-  mem_size : Int=13  //13
+  n_way : Int=4
   )extends Module {
   val io = IO(new Bundle {
     val cache_in = new cache_in()
@@ -91,7 +90,7 @@ class Memory (
 
 
   // Create a memory of 1024 cache lines
-  val mem = SyncReadMem(1 << (mem_size-log2Ceil(n_way)), new CacheLine(n_way,mem_size))
+  val mem = SyncReadMem(1 << 11, new CacheLine)
   val pseudoLRU = Module(new PseudoLRU(n_way))
 
   //this delay is due to SYNCREADMEM one cycle delay
@@ -101,8 +100,8 @@ class Memory (
 
   //slicing the memory address
   val offset = inputBuffer.Mem_addr(7,6)
-  val index = inputBuffer.Mem_addr(7+ (mem_size-log2Ceil(n_way)),8)
-  val tag = inputBuffer.Mem_addr(31,8+(mem_size-log2Ceil(n_way)))
+  val index = inputBuffer.Mem_addr(18,8)
+  val tag = inputBuffer.Mem_addr(31,19)
 
 
   // Read logic: Read the full cache line
@@ -244,7 +243,7 @@ class Memory (
   
 
 
-  val newCacheLine = Wire(new CacheLine(n_way,mem_size))
+  val newCacheLine = Wire(new CacheLine)
   newCacheLine := cacheLineRead
   //when there is a cache hit
   when(cache_hit_write || cache_miss_write || delay_MSHR_write) {

@@ -91,7 +91,7 @@ class MSHR(arlen:Int=7,beat_size:Int=64 ,addr_w: Int = 3,idWidth: Int = 2, addre
 
 
     io.axi.ARVALID := (state===idle)  && enq_fifo.io.deq.valid && !enq_fifo.io.deq.bits.valid
-    io.axi.ARADDR := Cat(enq_fifo.io.deq.bits.Mem_addr(31,8), 0.U(8.W))
+    io.axi.ARADDR := enq_fifo.io.deq.bits.Mem_addr
     io.axi.ARID := 0.U
     io.axi.ARLEN := 7.U
     io.axi.ARSIZE := 5.U

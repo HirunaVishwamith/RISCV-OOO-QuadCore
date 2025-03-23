@@ -75,7 +75,7 @@ class writeBackBuffer(arlen:Int=7,beat_size:Int=64 ,addr_w: Int = 3,idWidth: Int
 
 
     io.axi.AWVALID := (state===idle) && fifo.io.deq.valid
-    io.axi.AWADDR := Cat(fifo.io.deq.bits.Mem_addr(31,8), 0.U(8.W))
+    io.axi.AWADDR := fifo.io.deq.bits.Mem_addr
     io.axi.AWID := 0.U
     io.axi.AWLEN := 7.U
     io.axi.AWSIZE := 5.U
@@ -87,7 +87,7 @@ class writeBackBuffer(arlen:Int=7,beat_size:Int=64 ,addr_w: Int = 3,idWidth: Int
     
     io.axi.WVALID := (state===wdata)
     io.axi.WDATA := w_data_wire(axi_WDATA_counter)
-    io.axi.WLAST := (axi_WDATA_counter===io.axi.AWLEN) 
+    io.axi.WLAST := (axi_WDATA_counter===io.axi.AWLEN)
     io.axi.WSTRB := "b11111111".U
 
     io.axi.BREADY := (state===bresp)

@@ -14,8 +14,8 @@ import cache.pipelineMemoryRequest
 import dataclass.data
 import cache.peripheralHandler
 import chisel3.util.experimental.decode.decoder
-import cache_phase3.constants._
-import cache_phase3._
+import DataCache._
+import DataCache.constantsDCache._
 
 
 class core (
