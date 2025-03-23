@@ -12,3 +12,4 @@ Image
 Image1
 *.out
 *.log
+*.vcd
