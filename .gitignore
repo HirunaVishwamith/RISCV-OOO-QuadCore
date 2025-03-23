@@ -13,3 +13,4 @@ Image1
 *.out
 *.log
 *.vcd
+firrtl_black_box_resource_files.f
