@@ -12,7 +12,7 @@ import os.write
 import decode.constants
 import os.read
 import dataclass.data
-import DataCache.ACE
+
 
 class mainMemory(
   addressBitSize:Int = 28,
@@ -56,7 +56,7 @@ class mainMemory(
   .foreach{ case(client, buffer) => 
     when(client.ARREADY && client.ARVALID) { 
       buffer.valid := true.B
-      buffer.address := (client.ARADDR&(~(3.U(32.W)))) + 32.U //leon changed
+      buffer.address := (client.ARADDR&(~(3.U(32.W)))) + 8.U //leon changed
       buffer.id := client.ARID
       buffer.beatsRemaining := client.ARLEN
     } 
@@ -75,7 +75,7 @@ class mainMemory(
   .foreach{ case(client, (request, response)) =>
     when(client.RREADY || !response.valid) {
       response.valid := request.valid
-      response.data := Cat(Seq.tabulate(32)(i => memory.read(i.U + Mux(request.valid, request.address, (client.ARADDR&(~(3.U(32.W))))))).reverse) //leon
+      response.data := Cat(Seq.tabulate(8)(i => memory.read(i.U + Mux(request.valid, request.address, (client.ARADDR&(~(3.U(32.W))))))).reverse) //leon
       response.last := Mux(!response.last, request.valid && !(request.beatsRemaining.orR), !(client.RVALID && client.RREADY))
       response.id := request.id
 
@@ -83,7 +83,7 @@ class mainMemory(
         when(!request.beatsRemaining.orR) { request.valid := false.B }
         .otherwise { request.beatsRemaining := (request.beatsRemaining - 1.U) }
 
-        request.address := request.address + 32.U //leon changed
+        request.address := request.address + 8.U //leon changed
       }
     }  
     client.RVALID := response.valid
@@ -129,10 +129,10 @@ class mainMemory(
 
   // writing to memory
   when(writeBuffers.addressValid && writeBuffers.dataValid) {
-    Seq.tabulate(32)(i => (i, (writeBuffers.data >> (i*8))(7, 0), writeBuffers.dataMask(i))) //leon
+    Seq.tabulate(8)(i => (i, (writeBuffers.data >> (i*8))(7, 0), writeBuffers.dataMask(i))) //leon
     .foreach{ case(offset, data, maskBit) => when(maskBit.asBool) { memory.write(writeBuffers.address + offset.U, data) } }
 
-    writeBuffers.address := writeBuffers.address + 32.U //leon changed
+    writeBuffers.address := writeBuffers.address + 8.U //leon changed
   }
   
   // write response buffer
