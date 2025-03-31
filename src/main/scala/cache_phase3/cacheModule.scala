@@ -6,8 +6,6 @@ import chisel3.experimental.BundleLiterals._
 import cache_phase3.constants._
 import cache_phase3.ChiselUtils.zeroInit
 
-//TODO : Commit fifo need to cache branch resolve and remove loads as they might be invliadated while outside the cache module
-
 class CacheModule (
   peripheral_id : Int,
   dPort_id : Int
@@ -27,6 +25,8 @@ class CacheModule (
   val writeCommit = IO(new composableInterface)
   val branchOps = IO(new branchOps)
   val loadCommit = IO(new loadCommit)
+  //!Debug only
+  val debug = IO(new debug)
 
   canAllocate := false.B  
   
@@ -42,7 +42,7 @@ class CacheModule (
   loadCommit.valid := false.B
   loadCommit.state := false.B
 
-  val scheduler = Module(new Scheduler)
+  val requestScheduler = Module(new requestScheduler)
   val arbiter = Module(new arbiter)
   val cacheLookup = Module(new cacheLookupUnit)
   val replayUnit = Module(new replayUnit)
@@ -60,16 +60,30 @@ class CacheModule (
     length = dPort_LEN,
     size = dPort_SIZE
   ))
-  val commitFifo = Module(new fifoRecordInvalidate(
+  val commitFifo = Module(new fifoRecordInvalidateI(
     depth = schedulerDepth*4,
-    traitType = new baseWire
+    traitType = new requestPipelineWire
   ))
 
   //Scheduler connections
-  scheduler.branchOps <> branchOps
-  canAllocate := scheduler.canAllocate && commitFifo.isEmpty
+  requestScheduler.branchOps := branchOps
+  canAllocate := requestScheduler.canAllocate && commitFifo.isEmpty
   
-  scheduler.requestIn <> request
+  requestScheduler.requestIn.valid := request.valid
+  requestScheduler.requestIn.address := request.address
+  requestScheduler.requestIn.core.instruction := request.instruction
+  requestScheduler.requestIn.core.robAddr := request.robAddr
+  requestScheduler.requestIn.core.prfDest := request.prfDest
+  requestScheduler.requestIn.branch.mask := request.branchMask
+
+  requestScheduler.requestIn.branch.valid := true.B
+  requestScheduler.requestIn.writeData.valid := false.B
+  requestScheduler.requestIn.writeData.data := 0.U
+  requestScheduler.requestIn.cacheLine.valid := false.B
+  requestScheduler.requestIn.cacheLine.cacheLine := 0.U
+  requestScheduler.requestIn.cacheLine.response := 0.U
+  requestScheduler.requestIn.cacheLine.required := false.B
+  requestScheduler.requestIn.cacheLine.invalidated := false.B
   
   //Arbiter connections
   arbiter.writeDataIn <> writeDataIn
@@ -77,18 +91,20 @@ class CacheModule (
   arbiter.responseOut := responseOut
   arbiter.branchOps <> branchOps
   
-  // arbiter.request <> scheduler.requestOut
-  scheduler.controlSignal.inorderReady := arbiter.request.inorderReady
-  scheduler.controlSignal.speculativeReady := arbiter.request.speculativeReady
-  arbiter.request.isSpeculative := scheduler.controlSignal.isSpeculative
-  arbiter.request.request := scheduler.requestOut
+  // arbiter.request <> requestScheduler.requestOut
+  requestScheduler.controlSignal.inorderReady := arbiter.request.inorderReady
+  requestScheduler.controlSignal.speculativeReady := arbiter.request.speculativeReady
+  arbiter.request.isSpeculative := requestScheduler.controlSignal.isSpeculative
+  arbiter.request.request := requestScheduler.requestOut
   arbiter.replayRequest <> replayUnit.responseOut
   arbiter.coherencyRequest <> aceUnit.coherencyRequest
 
   //Cachelookup
-  cacheLookup.branchOps <> branchOps
+  cacheLookup.branchOps := branchOps
 
   cacheLookup.request <> arbiter.toCacheLookup
+  //!Debug only
+  debug := cacheLookup.debug 
   
   //ReplayUnit
   replayUnit.branchOps <> branchOps
@@ -96,6 +112,7 @@ class CacheModule (
   replayUnit.requestIn <> cacheLookup.toReplay
   replayUnit.responseIn <> aceUnit.readResponse
   replayUnit.writeBackIn <> cacheLookup.toWriteBack
+  replayUnit.coherencyRequest := aceUnit.coherencyRequest.request
 
   //ACEUnit
   aceUnit.branchOps <> branchOps
@@ -112,11 +129,12 @@ class CacheModule (
   peripheralUnit.request <>arbiter.toPeripheral 
   peripheralUnit.responseOut.ready := !cacheLookup.toResponse.request.valid
 
-  responseOut.valid := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.valid, peripheralUnit.responseOut.request.valid)
-  responseOut.prfDest := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.prfDest, peripheralUnit.responseOut.request.prfDest)
-  responseOut.robAddr := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.robAddr, peripheralUnit.responseOut.request.robAddr)
-  responseOut.result := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.result, peripheralUnit.responseOut.request.result)
-  responseOut.instruction := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.instruction, peripheralUnit.responseOut.request.instruction)
+  responseOut.valid := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.valid && cacheLookup.toResponse.request.branch.valid, 
+                  peripheralUnit.responseOut.request.valid)
+  responseOut.prfDest := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.core.prfDest, peripheralUnit.responseOut.request.core.prfDest)
+  responseOut.robAddr := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.core.robAddr, peripheralUnit.responseOut.request.core.robAddr)
+  responseOut.result := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.writeData.data, peripheralUnit.responseOut.request.writeData.data)
+  responseOut.instruction := Mux(cacheLookup.toResponse.request.valid, cacheLookup.toResponse.request.core.instruction, peripheralUnit.responseOut.request.core.instruction)
 
   //-----------------------Commit FIFO-----------------------------//
   zeroInit(commitFifo.write.data)
@@ -125,10 +143,12 @@ class CacheModule (
   commitFifo.invalidateEnable := false.B
 
   //Enqueue from responseOut of cacheLookup
-  when(cacheLookup.toResponse.request.valid && cacheLookup.toResponse.request.instruction(6,0) === "b0000000".U){
-    commitFifo.write.data.address := cacheLookup.toResponse.request.address
+  when(cacheLookup.toResponse.request.valid && cacheLookup.toResponse.request.core.instruction(6,0) === "b0000000".U){
+    commitFifo.write.data := cacheLookup.toResponse.request
     commitFifo.write.data.valid := true.B
   }
+  //BranchOps
+  commitFifo.branchOps := branchOps
   //Invalidate from the coherentRequest from aceUnit
   when(aceUnit.coherencyRequest.request.valid){
     commitFifo.invalidateAddr := aceUnit.coherencyRequest.request.address
@@ -138,14 +158,14 @@ class CacheModule (
   when(loadCommit.ready){
     commitFifo.read.ready := true.B
     loadCommit.state := commitFifo.read.data.valid
-    loadCommit.valid := !commitFifo.isEmpty
+    loadCommit.valid := !commitFifo.isEmpty && commitFifo.read.data.branch.valid
   }
 
   //-----------------Initiate Fence----------------------//
   val fenceInititatedReg = RegInit(false.B)
   val canInititatedFenceReg = RegInit(false.B)
   val subModulesReady = WireDefault(
-    scheduler.fenceReady && 
+    requestScheduler.fenceReady && 
     arbiter.fenceReady &&
     replayUnit.fenceReady &&
     aceUnit.fenceReady &&

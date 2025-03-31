@@ -5,12 +5,8 @@ import chisel3.util._
 import chisel3.experimental.BundleLiterals._
 import cache_phase3.constants._
 import dataclass.data
-import cache_phase3.ChiselUtils.zeroInit
 import os.truncate
-
-//TODO : For now only readUnique is used, rest will be added later
-//TODO : Add seperate field for data received for clairty in readresponse
-//TODO : Add branchOps for the readBuffer, responseBuffer, read, Reg and Write all cases
+import cache_phase3.ChiselUtils._
 
 class ACEUnit(
 	dataWidth: Int,
@@ -21,11 +17,11 @@ class ACEUnit(
 ) extends Module{
   val readRequest = IO(new Bundle {
     val ready = Output(Bool())
-    val request = Input(new requestWithDataWire)
+    val request = Input(new requestPipelineWire)
   })
   val readResponse = IO(new Bundle {
     val ready = Input(Bool())
-    val request = Output(new replayWithCacheLineWire)
+    val request = Output(new requestPipelineWire)
   })
   val writeRequest = IO(new Bundle {
     val ready = Output(Bool())
@@ -105,33 +101,23 @@ class ACEUnit(
   bus.CDDATA := 0.U
   bus.CDLAST := false.B
 
-  val readBuffer =  RegInit(0.U.asTypeOf(new replayWithBranchInvalidWire))
-  readRequest.ready := !readBuffer.valid
-  when(!readBuffer.valid){
-    readBuffer.valid := readRequest.request.valid
-    readBuffer.address := readRequest.request.address
-    readBuffer.instruction := readRequest.request.instruction
-    readBuffer.branchMask := readRequest.request.branchMask
-    readBuffer.robAddr := readRequest.request.robAddr
-    readBuffer.prfDest := readRequest.request.prfDest
-    readBuffer.writeEn := readRequest.request.writeEn
-    readBuffer.writeData := readRequest.request.writeData
+  val readBuffer =  RegInit(0.U.asTypeOf(new requestPipelineWire))
+  readRequest.ready := !readBuffer.valid || (readBuffer.valid && !readBuffer.branch.valid)
+  when(readRequest.request.valid && readRequest.request.branch.valid && readRequest.ready){
+    readBuffer := readRequest.request
+    regWriteUpdate(readBuffer.branch, branchOps, readRequest.request.branch)
   }
-  val responseBuffer = RegInit(0.U.asTypeOf(new replayWithBranchInvalidWire))
-  readResponse.request.valid := responseBuffer.valid && !responseBuffer.branchInvalid
-  readResponse.request.address := responseBuffer.address
-  readResponse.request.instruction := responseBuffer.instruction
-  readResponse.request.branchMask := responseBuffer.branchMask
-  readResponse.request.robAddr := responseBuffer.robAddr
-  readResponse.request.prfDest := responseBuffer.prfDest
-  readResponse.request.cacheLine := responseBuffer.cacheLine
-  readResponse.request.response := responseBuffer.response
-  readResponse.request.writeEn := responseBuffer.writeEn
-  readResponse.request.writeData := responseBuffer.writeData
+  when(readBuffer.valid){
+    regRecordUpdate(readBuffer.branch, branchOps)
+  }
+  val responseBuffer = RegInit(0.U.asTypeOf(new requestPipelineWire))
+  readResponse.request := responseBuffer
+  regReadUpdate(readResponse.request.branch, branchOps, responseBuffer.branch)
 
-  val ACEMSHR = Module(new fifoWithBranchOpsII(
+
+  val ACEMSHR = Module(new fifoWithBranchOps(
     depth = schedulerDepth,
-    traitType = new replayWithBranchInvalidWire
+    traitType = new requestPipelineWire
   ))
   zeroInit(ACEMSHR.write.data)
   ACEMSHR.read.ready := false.B
@@ -140,7 +126,9 @@ class ACEUnit(
   //WriteRequests
   val writeBuffer = RegInit(0.U.asTypeOf(new writeBackWire))
   writeRequest.ready := !writeBuffer.valid
-  writeBuffer := writeRequest.request
+  when(!writeBuffer.valid){
+    writeBuffer := writeRequest.request
+  }
 
 
   //CoherentRequests
@@ -149,10 +137,10 @@ class ACEUnit(
 
   val coherencyResponseBuffer = RegInit(0.U.asTypeOf(new coherencyResponseWire))
   coherencyResponse.ready := !coherencyResponseBuffer.valid
-  coherencyResponseBuffer := Mux(!coherencyResponseBuffer.valid ,coherencyResponse.request, coherencyResponseBuffer)
+  coherencyResponseBuffer := Mux(!coherencyResponseBuffer.valid, coherencyResponse.request, coherencyResponseBuffer)
 
   //-----------------------AXI Write-------------------------------//
-  val writeIdleState :: writeRequestState :: writeResponseState :: Nil = Enum(3)
+  val writeIdleState :: writeRequestState :: writeDataState :: writeResponseState :: Nil = Enum(4)
 
   val writeACEState = RegInit(writeIdleState)
   val writeCounter = Module(new moduleCounter(length))
@@ -167,7 +155,7 @@ class ACEUnit(
     is(writeRequestState){
       bus.AWVALID := true.B
       bus.AWID := id.U
-      bus.AWADDR := Cat(writeBuffer.address(addrWidth - 1, log2Ceil(lineSize*8)), 0.U(log2Ceil(lineSize*8).W))
+      bus.AWADDR := Cat(writeBuffer.address(addrWidth - 1, log2Ceil(lineSize)), 0.U(log2Ceil(lineSize).W))
       bus.AWLEN := length.U
       bus.AWSIZE := size.U
       bus.AWBURST := "b01".U
@@ -179,6 +167,10 @@ class ACEUnit(
       bus.AWDOMAIN := "b10".U
       bus.AWSNOOP := "b011".U
 
+      writeACEState := Mux(bus.AWREADY, writeDataState, writeRequestState)
+    }
+    is(writeDataState){
+
       bus.WVALID := true.B
       bus.WSTRB := Fill(busWidth/8, 1.U)
       bus.WLAST := writeCounter.count === length.U
@@ -187,11 +179,11 @@ class ACEUnit(
       val writeChunks = VecInit(Seq.tabulate(numSlices)(i => 
         writeBuffer.data((i + 1) * busWidth - 1, i * busWidth)
       ))
-      when(bus.WREADY && bus.AWREADY){
-        bus.WDATA := writeChunks(writeCounter.count)
+      when(bus.WREADY){
         writeCounter.incrm := true.B 
       }
-      writeACEState := Mux(bus.WLAST && bus.WREADY && bus.AWREADY, writeResponseState, writeRequestState)
+      bus.WDATA := writeChunks(writeCounter.count)
+      writeACEState := Mux(bus.WLAST && bus.WREADY, writeResponseState, writeDataState)
     }
     is(writeResponseState){
       bus.BREADY := true.B
@@ -212,7 +204,7 @@ class ACEUnit(
     is(readRequestState){
       bus.ARVALID := true.B
       bus.ARID := id.U
-      bus.ARADDR := Cat(readBuffer.address(addrWidth - 1, log2Ceil(lineSize*8)), 0.U(log2Ceil(lineSize*8).W))
+      bus.ARADDR := Cat(readBuffer.address(addrWidth - 1, log2Ceil(lineSize)), 0.U(log2Ceil(lineSize).W))
       bus.ARLEN := length.U
       bus.ARSIZE := size.U
       bus.ARBURST := "b01".U
@@ -222,17 +214,18 @@ class ACEUnit(
       bus.ARQOS := "b0000".U
 
       bus.ARDOMAIN := "b10".U
-      bus.ARSNOOP := "b0001".U    
-      switch(Cat(readBuffer.response)){
+      bus.ARSNOOP := "b0001".U    //!Not implemented yet
+      switch(Cat(readBuffer.cacheLine.response)){
         is("b00".U){ bus.ARSNOOP := "b0001".U}  //ReadShared
         is("b01".U){ bus.ARSNOOP := "b0111".U}  //ReadUnique
         is("b11".U){ bus.ARSNOOP := "b1011".U}  //CleanUnique
       }
-      bus.ARSNOOP := "b0111".U //ReadUnique
+      // bus.ARSNOOP := "b0111".U //ReadUnique
       bus.ARBAR := "b00".U
 
       when(bus.ARREADY){
         ACEMSHR.write.data := readBuffer
+        regReadUpdate(ACEMSHR.write.data.branch, branchOps, readBuffer.branch)
         readBuffer.valid := false.B
       }
       readACERequestState := Mux(bus.ARREADY, readIdleState, readRequestState)
@@ -243,6 +236,7 @@ class ACEUnit(
   val readACEResponseState = RegInit(readDataInState)
   val readDataVec = RegInit(VecInit(Seq.fill(length+1)(0.U(busWidth.W))))
   val readResponseValid = RegInit(true.B)
+  val readResponseReg = RegInit(0.U(2.W))
   val readCounter = Module(new moduleCounter(length))
   readCounter.incrm := false.B
   readCounter.reset := false.B
@@ -250,29 +244,47 @@ class ACEUnit(
     is(readDataInState){
       readCounter.reset := true.B
 
-      ACEMSHR.read.ready := true.B
-      responseBuffer := ACEMSHR.read.data
+      when(!ACEMSHR.isEmpty){
+        ACEMSHR.read.ready := true.B
+        responseBuffer := ACEMSHR.read.data
+      }
       responseBuffer.valid := false.B
       
-      readACEResponseState := Mux(ACEMSHR.read.data.valid, readResponseState, readDataInState)
+      readACEResponseState := Mux(ACEMSHR.read.data.valid && !ACEMSHR.isEmpty, readResponseState, readDataInState)
     }
     is(readResponseState){
+      val isCleanUniqueWire = responseBuffer.cacheLine.response === "b11".U
+      
       bus.RREADY := true.B
-      when(bus.RVALID & bus.RID === id.U){
-        readCounter.incrm := true.B
-        readDataVec(readCounter.count) := bus.RDATA 
+      when(isCleanUniqueWire){
+        readResponseReg := bus.RRESP(3,2)
         readResponseValid := Mux(bus.RRESP(1,0) === "b00".U, readResponseValid, false.B)
-        responseBuffer.response := bus.RRESP(3,2) //Not checking for response validity in isShared and passDirty 
+        responseBuffer.cacheLine.valid := false.B
+      } .otherwise{
+        when(bus.RVALID & bus.RID === id.U){
+          readCounter.incrm := true.B
+          readDataVec(readCounter.count) := bus.RDATA 
+          readResponseValid := Mux(bus.RRESP(1,0) === "b00".U, readResponseValid, false.B)
+          readResponseReg :=  bus.RRESP(3,2) //Not checking for response validity in isShared and passDirty 
+          responseBuffer.cacheLine.valid := true.B
+        }
       }
-      readACEResponseState := Mux(bus.RLAST && bus.RVALID && readResponseValid, readDataOutState, readResponseState)
+
+      when(isCleanUniqueWire){
+        readACEResponseState := Mux(bus.RVALID & bus.RID === id.U, readDataOutState, readResponseState)
+      } .otherwise  {
+        readACEResponseState := Mux(bus.RLAST && bus.RVALID && readResponseValid, readDataOutState, readResponseState)
+      }
     }
     is(readDataOutState){
       responseBuffer.valid := true.B
-      responseBuffer.cacheLine := Cat(readDataVec.reverse)
+      responseBuffer.cacheLine.cacheLine := Cat(readDataVec.reverse)
+      responseBuffer.cacheLine.response := readResponseReg
       
       readACEResponseState := Mux(readResponse.ready, readDataInState, readDataOutState)
     }
   } 
+  regRecordUpdate(responseBuffer.branch, branchOps)
 
   //--------------------Coherent state----------------------------//
   //* Since a new coherent request comes after the previous request's response is released-
@@ -303,7 +315,7 @@ class ACEUnit(
       bus.CRVALID := true.B
 
       coherentCounter.reset := true.B
-      //TODO : Check on the correct response
+
       bus.CRRESP := Mux(coherencyResponseBuffer.valid, Cat(0.U(1.W), !coherencyResponseBuffer.response(0), !coherencyResponseBuffer.response(1) , 0.U(1.W), coherencyResponseBuffer.dataValid.asUInt),
                         0.U)
       when(bus.CRREADY){
@@ -317,7 +329,7 @@ class ACEUnit(
       
       val numSlices = length + 1
       val writeChunks = VecInit(Seq.tabulate(numSlices)(i => 
-        coherencyResponseBuffer.data((i + 1) * busWidth - 1, i * busWidth)
+        coherencyResponseBuffer.cacheLine((i + 1) * busWidth - 1, i * busWidth)
       ))
       when(bus.CDREADY){
         coherentCounter.incrm := true.B 

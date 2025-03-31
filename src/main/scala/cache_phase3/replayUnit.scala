@@ -5,6 +5,7 @@ import chisel3.util._
 import chisel3.experimental.BundleLiterals._
 import cache_phase3.constants._
 import cache_phase3._
+import cache_phase3.ChiselUtils._
 
 //? After compiling
 //TODO : Check with old requests to see if the memory address is already in a previous request
@@ -19,19 +20,19 @@ import cache_phase3._
 class replayUnit extends Module{
   val requestIn = IO(new Bundle {
     val ready = Output(Bool())
-    val request = Input(new requestWithDataWire)
+    val request = Input(new requestPipelineWire)
   })
   val requestOut = IO(new Bundle {
     val ready = Input(Bool())
-    val request = Output(new requestWithDataWire)
+    val request = Output(new requestPipelineWire)
   })
   val responseIn = IO(new Bundle {
     val ready = Output(Bool())
-    val request = Input(new replayWithCacheLineWire)
+    val request = Input(new requestPipelineWire)
   })
   val responseOut = IO(new Bundle {
     val ready = Input(Bool())
-    val request = Output(new replayWithCacheLineWire)
+    val request = Output(new requestPipelineWire)
   })
   val writeBackIn = IO(new Bundle {
     val ready = Output(Bool())
@@ -42,36 +43,76 @@ class replayUnit extends Module{
     val request = Output(new writeBackWire)
   })
   val branchOps = IO(new branchOps)
+  val coherencyRequest = IO(Input(new coherencyRequestWire))
   val fenceReady = IO(Output(Bool()))
 
-  val requestWaitFIFO = Module(new fifoWithBranchOpsI(
-    depth = schedulerDepth,
-    traitType = new requestWithDataWire
-  ))
-  requestWaitFIFO.branchOps <> branchOps
-  requestWaitFIFO.write.data <> requestIn.request
-  requestWaitFIFO.write.ready <> requestIn.ready
-  requestWaitFIFO.read.data <> requestOut.request
-  requestWaitFIFO.read.ready <> requestOut.ready
+  //!Debug only
+  val isPauseForBoolean = WireDefault(pauseForBranch.B)
 
-  val responseWaitFIFO = Module(new fifoWithBranchOpsI(
+  val requestWaitFIFO = Module(new fifoWithBranchOps(
     depth = schedulerDepth,
-    traitType = new replayWithCacheLineWire
+    traitType = new requestPipelineWire
   ))
-  responseWaitFIFO.branchOps <> branchOps
-  responseWaitFIFO.write.data <> responseIn.request
-  responseWaitFIFO.write.ready <> responseIn.ready
-  responseWaitFIFO.read.data <> responseOut.request
-  responseWaitFIFO.read.ready <> responseOut.ready
-
+  val responseWaitFIFO = Module(new fifoRecordInvalidateII(
+    depth = schedulerDepth,
+    traitType = new requestPipelineWire
+  ))
   val writeBackFIFO = Module(new fifoBaseModule(
     depth = schedulerDepth,
     traitType = new writeBackWire
   ))
-  writeBackFIFO.write.ready <> writeBackIn.ready
-  writeBackFIFO.write.data <> writeBackIn.request
-  writeBackFIFO.read.data <> writeBackOut.request
-  writeBackFIFO.read.ready <> writeBackOut.ready
+
+  requestIn.ready := false.B
+  responseIn.ready := false.B
+  writeBackIn.ready := false.B
+  requestWaitFIFO.read.ready := false.B
+  responseWaitFIFO.read.ready := false.B
+  responseWaitFIFO.invalidateEnable := false.B
+  responseWaitFIFO.invalidateAddr := 0.U
+  writeBackFIFO.read.ready := false.B
+  
+  zeroInit(requestWaitFIFO.write.data)
+  zeroInit(responseWaitFIFO.write.data)
+  zeroInit(writeBackFIFO.write.data)
+
+  requestWaitFIFO.branchOps <> branchOps
+  responseWaitFIFO.branchOps <> branchOps
+    
+  //! Debug only
+  when(!(isPauseForBoolean && branchOps.valid)){
+    requestIn.ready := requestWaitFIFO.write.ready
+    requestWaitFIFO.read.ready := requestOut.ready
+  }
+  when(requestIn.request.valid && requestIn.request.branch.valid){
+    requestWaitFIFO.write.data := requestIn.request
+    regReadUpdate(requestWaitFIFO.write.data.branch, branchOps, requestIn.request.branch)
+  }
+  requestOut.request := requestWaitFIFO.read.data
+
+  //! Debug only
+  when(!(isPauseForBoolean && branchOps.valid)){
+    responseIn.ready := responseWaitFIFO.write.ready
+    responseWaitFIFO.read.ready := responseOut.ready
+  }
+  when(responseIn.request.valid && responseIn.request.branch.valid){
+    responseWaitFIFO.write.data := responseIn.request
+    regReadUpdate(responseWaitFIFO.write.data.branch, branchOps, requestIn.request.branch)
+  }
+  responseOut.request := responseWaitFIFO.read.data
+  when(coherencyRequest.valid){
+    responseWaitFIFO.invalidateEnable := true.B
+    responseWaitFIFO.invalidateAddr := coherencyRequest.address
+  }
+
+  //! Debug only
+  when(!(isPauseForBoolean && branchOps.valid)){
+    writeBackIn.ready := writeBackFIFO.write.ready
+    writeBackFIFO.read.ready := writeBackOut.ready
+  }
+  when(writeBackIn.request.valid){
+    writeBackFIFO.write.data := writeBackIn.request
+  }
+  writeBackOut.request := writeBackFIFO.read.data
 
   fenceReady := requestWaitFIFO.isEmpty && responseWaitFIFO.isEmpty
 }

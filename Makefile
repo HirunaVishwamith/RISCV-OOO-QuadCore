@@ -1,18 +1,136 @@
 VPATH = ../scala:../cache:../common:../decode:../exec:../fetch:./memAccess:../rob:../testbench
 
-runLockStep: lock_step_run.out fyp18-riscv-emulator/src/Image
+.PHONY: vvadd
+vvadd: .stamp.vvadd
+
+.PHONY: matmul
+matmul: .stamp.matmul
+
+.PHONY: filter
+filter: .stamp.filter
+
+.PHONY: csaxpy
+csaxpy: .stamp.csaxpy
+
+.PHONY: histo
+histo: .stamp.histo
+
+.PHONY: test_all_images
+test_all_images: .stamp.test_all_images
+
+.PHONY : bulk_test
+bulk_test : .stamp.bulk_test
+
+.PHONY: runLockStep
+runLockStep: .stamp.runLockStep
+
+.PHONY: sim
+sim: .stamp.sim
+
+.stamp.vvadd: .stamp.vvadd .stamp.sim
+	cp lock_step_files/lock_step_run_vvadd.cpp lock_step_run.cpp
+	cp benchmark/mt-vvadd.bin fyp18-riscv-emulator/src/Image 
+	$(MAKE) runLockStep; 
+	@touch .stamp.vvadd
+
+.stamp.matmul: .stamp.matmul .stamp.sim
+	cp lock_step_files/lock_step_run_matmul.cpp lock_step_run.cpp
+	cp benchmark/mt-matmul.bin fyp18-riscv-emulator/src/Image 
+	$(MAKE) runLockStep; 
+	@touch .stamp.matmul
+
+.stamp.filter: .stamp.filter .stamp.sim
+	cp lock_step_files/lock_step_run_filter.cpp lock_step_run.cpp
+	cp benchmark/mt-mask-sfilter.bin fyp18-riscv-emulator/src/Image 
+	$(MAKE) runLockStep; 
+	@touch .stamp.filter
+
+.stamp.csaxpy: .stamp.csaxpy .stamp.sim
+	cp lock_step_files/lock_step_run_csaxpy.cpp lock_step_run.cpp
+	cp benchmark/mt-csaxpy.bin fyp18-riscv-emulator/src/Image 
+	$(MAKE) runLockStep; 
+	@touch .stamp.csaxpy
+
+.stamp.histo: .stamp.histo .stamp.sim
+	cp lock_step_files/lock_step_run_histo.cpp lock_step_run.cpp
+	cp benchmark/mt-histo.bin fyp18-riscv-emulator/src/Image 
+	$(MAKE) runLockStep; 
+	@touch .stamp.histo
+	
+.stamp.test_all_images: .stamp.sim
+	cp lock_step_files/lock_step_run_test.cpp lock_step_run.cpp
+	@rm -f test_results.txt
+	@for img in fyp18-riscv-emulator/riscv-tests/images/*; do \
+		echo "Processing $$img..."; \
+		cp $$img fyp18-riscv-emulator/src/Image; \
+		$(MAKE) runLockStep; \
+		STATUS=$$?; \
+		if [ $$STATUS -eq 0 ]; then \
+			echo "$$img: test pass" >> test_results.txt; \
+		else \
+			echo "$$img: test fail" >> test_results.txt; \
+		fi; \
+		rm fyp18-riscv-emulator/src/Image; \
+	done
+
+.stamp.bulk_test : .stamp.sim
+	$(MAKE) test_all_images;
+
+	$(MAKE) vvadd; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "vvadd: test pass" >> test_results.txt; \
+	else \
+		echo "vvadd: test fail" >> test_results.txt; \
+	fi; \
+
+	$(MAKE) matmul; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "matmul: test pass" >> test_results.txt; \
+	else \
+		echo "matmul: test fail" >> test_results.txt; \
+	fi; \
+
+	$(MAKE) filter; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "filter: test pass" >> test_results.txt; \
+	else \
+		echo "filter: test fail" >> test_results.txt; \
+	fi; \
+
+	$(MAKE) csaxpy; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "csaxpy: test pass" >> test_results.txt; \
+	else \
+		echo "csaxpy: test fail" >> test_results.txt; \
+	fi; \
+
+	$(MAKE) histo; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "histo: test pass" >> test_results.txt; \
+	else \
+		echo "histo: test fail" >> test_results.txt; \
+	fi; \
+
+VERILATOR_INCLUDE = /home/mcrparadox/verilator/include
+
+.stamp.runLockStep: .stamp.lock_step_run.out fyp18-riscv-emulator/src/Image
 	./lock_step_run.out
 
-lock_step_run.out: lock_step_run.cpp fyp18-riscv-emulator/src/emulator.h fyp18-riscv-emulator/src/constants.h simulator/src/simulator.h simulator/src/obj_dir
-	g++ -O3 -I /usr/share/verilator/include -I simulator/src/obj_dir /usr/share/verilator/include/verilated.cpp /usr/share/verilator/include/verilated_vcd_c.cpp lock_step_run.cpp simulator/src/obj_dir/Vsystem__ALL.a -o lock_step_run.out
+.stamp.lock_step_run.out: lock_step_run.cpp fyp18-riscv-emulator/src/emulator.h fyp18-riscv-emulator/src/constants.h simulator/src/simulator.h simulator/src/obj_dir
+	g++ -O3 -I $(VERILATOR_INCLUDE) -I simulator/src/obj_dir \
+		$(VERILATOR_INCLUDE)/verilated.cpp $(VERILATOR_INCLUDE)/verilated_vcd_c.cpp \
+		lock_step_run.cpp simulator/src/obj_dir/Vsystem__ALL.a -o lock_step_run.out
+		@touch .stamp.lock_step_run.out
 
-simulator/src/obj_dir: simulator/src/system.v simulator/src/iCacheRegisters.v
+simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheRegisters.v
 	cd simulator/src/; \
 	echo '/* verilator lint_off UNUSED */' | cat - system.v > temp && mv temp system.v; \
 	echo '/* verilator lint_off DECLFILENAME */' | cat - system.v > temp && mv temp system.v; \
-	echo '/* verilator lint_off UNUSED */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
-	echo '/* verilator lint_off DECLFILENAME */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
-	echo '/* verilator lint_off VARHIDDEN */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
 	echo '/* verilator lint_off UNUSED */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
 	echo '/* verilator lint_off DECLFILENAME */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
 	echo '/* verilator lint_off VARHIDDEN */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
@@ -22,23 +140,19 @@ simulator/src/obj_dir: simulator/src/system.v simulator/src/iCacheRegisters.v
 	cd obj_dir/; \
 	make -f Vsystem.mk; \
 
-targets := $(wildcard src/*.scala)
-sim:
+.stamp.sim:$(shell find src/main/scala/ -type f -name '*.scala')
 	# Change instructionBase in configuration file
 	mv src/main/scala/common/configuration.scala configuration.txt
 	sed 's/instructionBase/instructionBase = 0x0000000010000000L\/\//' configuration.txt > src/main/scala/common/configuration.scala
+	# sbt "clean; compile; runMain system"
 	sbt "runMain system"
 	# Restoring the original configuration
 	mv configuration.txt src/main/scala/common/configuration.scala
 	cp system.v simulator/src/
 	cd simulator/src/; \
-	cp ../../dCacheRegisters.v .; \
 	cp ../../iCacheRegisters.v .; \
 	echo '/* verilator lint_off UNUSED */' | cat - system.v > temp && mv temp system.v; \
 	echo '/* verilator lint_off DECLFILENAME */' | cat - system.v > temp && mv temp system.v; \
-	echo '/* verilator lint_off UNUSED */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
-	echo '/* verilator lint_off DECLFILENAME */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
-	echo '/* verilator lint_off VARHIDDEN */' | cat - dCacheRegisters.v > temp && mv temp dCacheRegisters.v; \
 	echo '/* verilator lint_off UNUSED */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
 	echo '/* verilator lint_off DECLFILENAME */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
 	echo '/* verilator lint_off VARHIDDEN */' | cat - iCacheRegisters.v > temp && mv temp iCacheRegisters.v; \
@@ -46,7 +160,8 @@ sim:
 	echo '/* verilator lint_off WIDTH */' | cat - system.v > temp && mv temp system.v; \
 	verilator -Wall --trace -cc system.v; \
 	cd obj_dir/; \
-	make -f Vsystem.mk; \
+	make -f Vsystem.mk;
+	@touch .stamp.sim
 
 simulator/src/bench.out: simulator/src/obj_dir simulator/src/simulator.h simulator/src/bench.cpp
 	cd simulator/src; \
@@ -83,3 +198,8 @@ make zynq:
 fix_inotify_instances_reached:
 	# java.io.IOException: User limit of inotify instances reached or too many open files
 	echo 512 | sudo tee /proc/sys/fs/inotify/max_user_instances
+
+.PHONY: clean
+clean:
+	rm -rf .stamp.*;
+	rm -rf ./simulator/src/obj_dir
