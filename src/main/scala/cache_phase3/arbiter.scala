@@ -128,6 +128,7 @@ class arbiter extends Module {
         } .elsewhen(operationWires.isLR){
 
           inorderBuffer := operationBuffer
+          inorderBuffer.writeData.valid := false.B
           operationState := waitState
         } .elsewhen(operationWires.isSC){
 
@@ -153,7 +154,7 @@ class arbiter extends Module {
     is(commitFiredState){
       when(writeDataIn.valid){
 
-        inorderBuffer := Mux(!operationWires.isLR, operationBuffer, inorderBuffer)
+        inorderBuffer := operationBuffer
         inorderBuffer.writeData.data := writeDataIn.data
         inorderBuffer.writeData.valid := writeDataIn.valid
         operationBuffer.valid := false.B
@@ -240,7 +241,7 @@ class arbiter extends Module {
       when(isSCReadWire){
         rAtmoicsWritePending := true.B
       }
-    }.elsewhen(speculativeBuffer.valid) {
+    }.elsewhen(speculativeBuffer.valid && !(operationBuffer.valid && operationBuffer.address(addrWidth - 1, 3) === speculativeBuffer.address(addrWidth - 1, 3))) {
       speculativeBuffer.valid := false.B
 
       toCacheLookup.request := speculativeBuffer

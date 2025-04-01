@@ -14,3 +14,4 @@ Image1
 *.log
 *.vcd
 firrtl_black_box_resource_files.f
+Makefile
