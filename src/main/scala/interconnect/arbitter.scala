@@ -12,10 +12,11 @@ import chisel3.experimental.BundleLiterals._
 
 
 class AribiterIO extends Bundle {
-    //core_0
+    //core_0_D$
     //AR,AW,W
     val AWVALID_0 = Input(Bool())
 	val AWREADY_0 = Output(Bool())
+	val AWBAR_0 = Input(Bool())
 
 	val WVALID_0 = Input(Bool())
 	val WLAST_0 = Input(Bool())
@@ -25,7 +26,7 @@ class AribiterIO extends Bundle {
 	val ARREADY_0 = Output(Bool())
 
 
-    //core_1
+    //core_0_I$
     val AWVALID_1 = Input(Bool())
 	val AWREADY_1 = Output(Bool())
 
@@ -36,9 +37,10 @@ class AribiterIO extends Bundle {
 	val ARVALID_1 = Input(Bool())
 	val ARREADY_1 = Output(Bool())
 
-    //core_2
+    //core_1_D$
     val AWVALID_2 = Input(Bool())
 	val AWREADY_2 = Output(Bool())
+	val AWBAR_2 = Input(Bool())
 
 	val WVALID_2 = Input(Bool())
 	val WLAST_2 = Input(Bool())
@@ -47,7 +49,7 @@ class AribiterIO extends Bundle {
 	val ARVALID_2 = Input(Bool())
 	val ARREADY_2 = Output(Bool())
 
-    //core_3
+    //core_1_I$
     val AWVALID_3 = Input(Bool())
 	val AWREADY_3 = Output(Bool())
 
@@ -96,8 +98,14 @@ class arbiter extends Module {
 	//10_000: core_2, 10_001: core_2r, 10_010: core_2r_enq, 10_100: core_2wa, 10_101: core_2wa_enq, 10_110:core_2wd, 10_111:core_2wd_enq
 	//11_000: core_3, 11_001: core_3r, 11_010: core_3r_enq, 11_100: core_3wa, 11_101: core_3wa_enq, 11_110:core_3wd, 11_111:core_3wd_enq
 
+	val barreg_core0 = RegInit(false.B)
+	val wlast_core0 = RegInit(false.B)
+
+	val barreg_core1 = RegInit(false.B)
+	val wlast_core1 = RegInit(false.B)
+
     switch(stateReg){
-		is(0.U){//00_000: core_0
+		is(0.U){//00_000: core_0_D$
             when(!io.AWVALID_0 & !io.ARVALID_0){
                 stateReg := 8.U
             }.elsewhen(io.ARVALID_0){
@@ -115,36 +123,42 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(2.U){ //00_010: core_0r_enq
+		is(2.U){ //00_010: core_0_D$_r_enq
             stateReg := 8.U
-            io.ARREADY_0 := true.B
-            io.enq_valid := true.B
+            io.ARREADY_0 := true.B && io.ARVALID_0
+            io.enq_valid := true.B && io.ARVALID_0
             io.select := 0.U
 		}
-		is(4.U){ //00_100: core_0wa
+		is(4.U){ //00_100: core_0_D$_wa
             when(io.enq_ready){
                 stateReg := 5.U
             }.otherwise{
 				stateReg := 4.U
             }
             io.enq_valid := false.B
+            barreg_core0 := io.AWBAR_0
 		}
-		is(5.U){ //00_101: core_0wa_enq
-            stateReg := 6.U
-            io.AWREADY_0 := true.B
-            io.enq_valid := true.B
+		is(5.U){ //00_101: core_0_D$_wa_enq
+            when(barreg_core0){
+                stateReg := 8.U
+            }.otherwise{
+                stateReg := 6.U
+            }
+            io.AWREADY_0 := true.B && io.AWVALID_0
+            io.enq_valid := true.B && io.AWVALID_0
             io.select := 1.U
 		}
-		is(6.U){ //00_110:core_0wd
+		is(6.U){ //00_110:core_0_D$_wd
             when(io.enq_ready && io.WVALID_0){
                 stateReg := 7.U
             }.otherwise{
 				stateReg := 6.U
             }
             io.enq_valid := false.B
+            wlast_core0 := io.WLAST_0
 		}
-		is(7.U){ //00_111:core_0wd_enq
-            when(!io.WLAST_0){
+		is(7.U){ //00_111:core_0_D$_wd_enq
+            when(!wlast_core0){
                 stateReg := 6.U
             }.otherwise{
 				stateReg := 8.U
@@ -154,7 +168,7 @@ class arbiter extends Module {
 			io.select := 2.U
 
 		}
-		is(8.U){ //01_000: core_1
+		is(8.U){ //01_000: core_0_I$
             when(!io.AWVALID_1 & !io.ARVALID_1){
                 stateReg := 16.U
             }.elsewhen(io.ARVALID_1){
@@ -164,7 +178,7 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(9.U){ //01_001: core_1r
+		is(9.U){ //01_001: core_0_I$_r
             when(io.enq_ready){
                 stateReg := 10.U
             }.otherwise{
@@ -172,13 +186,13 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(10.U){ //01_010: core_1r_enq
+		is(10.U){ //01_010: core_0_I$_r_enq
             stateReg := 16.U
-            io.ARREADY_1 := true.B
-            io.enq_valid := true.B
+            io.ARREADY_1 := true.B && io.ARVALID_1
+            io.enq_valid := true.B && io.ARVALID_1
             io.select := 4.U
 		}
-		is(12.U){ //01_100: core_1wa
+		is(12.U){ //01_100: core_0_I$_wa
             when(io.enq_ready){
                 stateReg := 13.U
             }.otherwise{
@@ -186,13 +200,13 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(13.U){ //01_101: core_1wa_enq
+		is(13.U){ //01_101: core_0_I$_wa_enq
             stateReg := 14.U
-            io.AWREADY_1 := true.B
-            io.enq_valid := true.B
+            io.AWREADY_1 := true.B && io.AWVALID_1
+            io.enq_valid := true.B && io.AWVALID_1
             io.select := 5.U
 		}
-		is(14.U){ //01_110:core_1wd
+		is(14.U){ //01_110:core_0_I$_wd
             when(io.enq_ready && io.WVALID_1){
                 stateReg := 15.U
             }.otherwise{
@@ -200,17 +214,17 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(15.U){ //01_111:core_1wd_enq
+		is(15.U){ //01_111:core_0_I$_wd_enq
             when(!io.WLAST_1){
                 stateReg := 14.U
             }.otherwise{
 				stateReg := 16.U
             }
-            io.WREADY_1 := true.B
-			io.enq_valid := true.B
+            io.WREADY_1 := true.B && io.WVALID_1
+			io.enq_valid := true.B && io.WVALID_1
 			io.select := 6.U
 		}
-		is(16.U){ //10_000: core_2
+		is(16.U){ //10_000: core_1_D$
             when(!io.AWVALID_2 & !io.ARVALID_2){
                 stateReg := 24.U
             }.elsewhen(io.ARVALID_2){
@@ -220,7 +234,7 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(17.U){ //10_001: core_2r
+		is(17.U){ //10_001: core_1_D$_r
             when(io.enq_ready){
                 stateReg := 18.U
             }.otherwise{
@@ -228,45 +242,51 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(18.U){ //10_010: core_2r_enq
+		is(18.U){ //10_010: core_1_D$_r_enq
             stateReg := 24.U
-            io.ARREADY_2 := true.B
-            io.enq_valid := true.B
+            io.ARREADY_2 := true.B && io.ARVALID_2
+            io.enq_valid := true.B && io.ARVALID_2
             io.select := 8.U
 		}
-		is(20.U){ //10_100: core_2wa
+		is(20.U){ //10_100: core_1_D$_wa
             when(io.enq_ready){
                 stateReg := 21.U
             }.otherwise{
 				stateReg := 20.U
             }
             io.enq_valid := false.B
+            barreg_core1 := io.AWBAR_0
 		}
-		is(21.U){ //10_101: core_2wa_enq
-            stateReg := 22.U
-            io.AWREADY_2 := true.B
-            io.enq_valid := true.B
+		is(21.U){ //10_101: core_1_D$_wa_enq
+            when(barreg_core1){
+                stateReg := 24.U
+            }.otherwise{
+                stateReg := 22.U
+            }
+            io.AWREADY_2 := true.B && io.AWVALID_2
+            io.enq_valid := true.B && io.AWVALID_2
             io.select := 9.U
 		}
-		is(22.U){ //10_110:core_2wd
+		is(22.U){ //10_110:core_1_D$_wd
             when(io.enq_ready && io.WVALID_2){
                 stateReg := 23.U
             }.otherwise{
 				stateReg := 22.U
             }
             io.enq_valid := false.B
+            wlast_core1 := io.WLAST_1
 		}
-		is(23.U){ //10_111:core_2wd_enq
-            when(!io.WLAST_2){
+		is(23.U){ //10_111:core_1_D$_wd_enq
+            when(!wlast_core1){
                 stateReg := 22.U
             }.otherwise{
 				stateReg := 24.U
             }
-            io.WREADY_2 := true.B
-			io.enq_valid := true.B
+            io.WREADY_2 := true.B && io.WVALID_2
+			io.enq_valid := true.B && io.WVALID_2
 			io.select := 10.U
 		}
-		is(24.U){ //11_000: core_3
+		is(24.U){ //11_000: core_1_I$
             when(!io.AWVALID_3 & !io.ARVALID_3){
                 stateReg := 0.U
             }.elsewhen(io.ARVALID_3){
@@ -276,7 +296,7 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(25.U){ //11_001: core_3r
+		is(25.U){ //11_001: core_1_I$_r
             when(io.enq_ready){
                 stateReg := 26.U
             }.otherwise{
@@ -284,13 +304,13 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(26.U){ //11_010: core_3r_enq
+		is(26.U){ //11_010: core_1_I$_r_enq
             stateReg := 0.U
-            io.ARREADY_3 := true.B
-            io.enq_valid := true.B
+            io.ARREADY_3 := true.B && io.ARVALID_3
+            io.enq_valid := true.B && io.ARVALID_3
             io.select := 12.U
 		}
-		is(28.U){ //11_100: core_3wa
+		is(28.U){ //11_100: core_1_I$_wa
             when(io.enq_ready){
                 stateReg := 29.U
             }.otherwise{
@@ -298,13 +318,13 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(29.U){ //11_101: core_3wa_enq
+		is(29.U){ //11_101: core_1_I$_wa_enq
             stateReg := 30.U
-            io.AWREADY_3 := true.B
-            io.enq_valid := true.B
+            io.AWREADY_3 := true.B && io.AWVALID_3
+            io.enq_valid := true.B && io.AWVALID_3
             io.select := 13.U
 		}
-		is(30.U){ //11_110:core_3wd
+		is(30.U){ //11_110:core_1_I$_wd
             when(io.enq_ready && io.WVALID_3){
                 stateReg := 31.U
             }.otherwise{
@@ -312,14 +332,14 @@ class arbiter extends Module {
             }
             io.enq_valid := false.B
 		}
-		is(31.U){ //11_111:core_3wd_enq
+		is(31.U){ //11_111:core_1_I$_wd_enq
             when(!io.WLAST_3){
                 stateReg := 30.U
             }.otherwise{
 				stateReg := 0.U
             }
-            io.WREADY_3 := true.B
-			io.enq_valid := true.B
+            io.WREADY_3 := true.B && io.WVALID_3
+			io.enq_valid := true.B && io.WVALID_3
 			io.select := 14.U
 		}
 

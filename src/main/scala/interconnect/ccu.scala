@@ -333,11 +333,14 @@ class ccu extends Module {
 	val stateReg_1 = RegInit(0.U(3.W))
 	val stateReg_2 = RegInit(0.U(3.W))
 
+	val write_back = RegInit(false.B)
+
 	//FSM_1
 	switch(stateReg_1){
 		is(0.U){//IDLE
 			when(deq.valid && (deq.data(3,0) === "b0011".U(4.W))){ //writeback
 				stateReg_1 := 1.U
+				write_back := true.B
 			}.elsewhen(deq.valid && (deq.data(3,0) === "b1000".U(4.W))){ //write barrier
 				stateReg_1 := 7.U
 			}.otherwise{
@@ -382,6 +385,7 @@ class ccu extends Module {
 		is(6.U){//SYNC
 			when(stateReg_2 === "b000".U(3.W)){
 				stateReg_1 := 0.U
+				write_back := false.B
 			}.otherwise{
 				stateReg_1 := 6.U
 			}
@@ -389,6 +393,7 @@ class ccu extends Module {
 		is(7.U){//AWBAR
 			when(stateReg_2 === "b000".U(3.W)){
 				stateReg_1 := 0.U
+				write_back := false.B
 			}.otherwise{
 				stateReg_1 := 7.U
 			}
@@ -523,7 +528,9 @@ class ccu extends Module {
 	//FSM_3, 0000 : readNoSnoop, 0100 : read memory barrier, 0001: readshared, 0111: read unique, 1011 : clean unique
     switch(stateReg_3){
 		is(0.U){//IDLE
-			when(deq.valid && ((deq.data(3,0) === "b0001".U(4.W)) || (deq.data(3,0) === "b0111".U(4.W)) || (deq.data(3,0) === "b0000".U(4.W)))){
+			when(write_back){
+				stateReg_3 := 0.U
+			}.elsewhen(deq.valid && ((deq.data(3,0) === "b0001".U(4.W)) || (deq.data(3,0) === "b0111".U(4.W)) || (deq.data(3,0) === "b0000".U(4.W)))){
 				stateReg_3 := 1.U
 			}.elsewhen(deq.valid && ((deq.data(3,0) === "b0100".U(4.W)) || (deq.data(3,0) === "b1011".U(4.W)))){
 				stateReg_3 := 2.U
@@ -903,7 +910,7 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0001".U(4.W)) || (tran_pbuf_3 === "b0111".U(4.W)) || (tran_pbuf_3 === "b0000".U(4.W)))){
 				stateReg_8 := 1.U
-			}.elsewhen(stateReg_4 === "b100".U(3.W) && ((tran_pbuf_3 === "b0100".U(4.W)) || (tran_pbuf_3 === "b1011".U(4.W)))){
+			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0100".U(4.W)) || (tran_pbuf_3 === "b1011".U(4.W)))){
 				stateReg_8 := 6.U
 			}.otherwise{
 				stateReg_8 := 0.U
@@ -911,13 +918,13 @@ class ccu extends Module {
 		}
 		is(1.U){//SELECT
 			stateReg_8 := 2.U
-			when(crpbuf_3_0(3)){ //here i am only checking it is shared or not because according to MOESI protocol.
+			when(crpbuf_3_0(0)){ //here i am only checking it is shared or not because according to MOESI protocol.
 				select_buff := "b000".U(3.W)
-			}.elsewhen(crpbuf_3_1(3)){
+			}.elsewhen(crpbuf_3_1(0)){
 				select_buff := "b001".U(3.W)
-			}.elsewhen(crpbuf_3_1(3)){
+			}.elsewhen(crpbuf_3_2(0)){
 				select_buff := "b010".U(3.W)
-			}.elsewhen(crpbuf_3_1(3)){
+			}.elsewhen(crpbuf_3_3(0)){
 				select_buff := "b011".U(3.W)
 			}.otherwise{          //if it is data is not shared even if it is in the other local caches i take from L2
 				select_buff := "b100".U(3.W)
@@ -992,7 +999,7 @@ class ccu extends Module {
 			when(!(((core_id_pbuf_3 === "b00".U(2.W)) && core0.RREADY) || ((core_id_pbuf_3 === "b01".U(2.W)) && core1.RREADY) || ((core_id_pbuf_3 === "b10".U(2.W)) && core2.RREADY) || ((core_id_pbuf_3 === "b11".U(2.W)) && core3.RREADY))){
 				stateReg_8 := 5.U
 			}.elsewhen(last_buff){
-				stateReg_8 := 0.U
+				stateReg_8 := 7.U
 			}.otherwise{
 				stateReg_8 := 2.U
 			}
@@ -1010,16 +1017,16 @@ class ccu extends Module {
 		}
 		is(6.U){//RSP_ARBAR
 			when((core_id_pbuf_3 === "b00".U(2.W)) && core0.RREADY){
-				stateReg_8 := 0.U
+				stateReg_8 := 7.U
 				core0.RVALID := true.B
 			}.elsewhen((core_id_pbuf_3 === "b01".U(2.W)) && core1.RREADY){
-				stateReg_8 := 0.U
+				stateReg_8 := 7.U
 				core1.RVALID := true.B
 			}.elsewhen((core_id_pbuf_3 === "b10".U(2.W)) && core2.RREADY){
-				stateReg_8 := 0.U
+				stateReg_8 := 7.U
 				core2.RVALID := true.B
 			}.elsewhen((core_id_pbuf_3 === "b11".U(2.W)) && core3.RREADY){
-				stateReg_8 := 0.U
+				stateReg_8 := 7.U
 				core3.RVALID := true.B
 			}.otherwise{
 				stateReg_8 := 6.U
@@ -1029,6 +1036,10 @@ class ccu extends Module {
 			core1.RRESP := "b0000".U(4.W)
 			core2.RRESP := "b0000".U(4.W)
 			core3.RRESP := "b0000".U(4.W)
+		}
+		is(7.U){
+			stateReg_8 := 0.U
+			last_buff := false.B
 		}
 	}
 	/**

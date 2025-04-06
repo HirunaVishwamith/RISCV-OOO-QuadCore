@@ -91,6 +91,7 @@ int main(int argc, char* argv[]) {
   #ifdef LOGGING
   std::ofstream outFile_core0("run_core0.log"); // This will create or overwrite the file
   std::ofstream outFile_core1("run_core1.log");
+  std::ofstream outState("states.log");
 
   // Check if the file is open
   if (!outFile_core0.is_open()) {
@@ -149,6 +150,14 @@ int main(int argc, char* argv[]) {
   //bench.step_nodump();
   unsigned long sim_prev = 0x80100000UL;
 	printf("Simulation start time: %s %s\n", __DATE__, __TIME__);
+  int count = 0; 
+  int i=0;
+  int j=0;
+  int prev_i=1;
+  int prev_j=1;
+  int now_i = 0;
+  int now_j = 0;
+
   while (1 || (bench.tickcount + bench.dump_tick) < 800351768UL) {
     //cout<<"instruction is :" << golden_model.get_instruction()<<endl;
     //cout<<"pc is :" << golden_model.get_pc()<<endl;
@@ -178,21 +187,53 @@ int main(int argc, char* argv[]) {
       outFile_core0 << setfill('0') << setw(8) << hex << golden_model.get_csr_value(MIE) << "\n";
       old_symbol = current_symbol;
     } */
+
+   
+
+
    if(x==0 || x==3 || x==2){
+    i++;
     outFile_core0 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(0) << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
+
+    // outState <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << endl;
+    // outState << golden_model.return_state(0);
+
    }
 
   if(x==3 || x==4 || x==5){
+    j++;
     outFile_core1 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(1) << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(1) << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
   }
+
+
+  //printf("prev_i = %d, now_i = %d, prev_j = %d, now_j = %d\n", prev_i, now_i, prev_j, now_j);
+
+  /*
+  if((prev_i==now_i) || (prev_j==now_j)){
+      printf("leon time out!!!!!! \n");
+      break;
+   }
+
+   */
+  /*
+  count++;
+
+  if(count%1000==0){
+      prev_i = now_i;
+      prev_j = now_j;
+      now_i = i;
+      now_j = j;
+   }
+
+   */
 
     /* switch (golden_model.check_for_mem_access(&mem_address, &data))
     {
@@ -270,7 +311,7 @@ int main(int argc, char* argv[]) {
       cout << " simulator value: " << setfill('0') << setw(16) << hex << bench.read_register_core0(bench.check_registers_core0(golden_model.reg_file(0), golden_model.get_mstatus(0))) << endl;
       golden_model.show_state(0);
       cout << dec << (bench.tickcount + bench.dump_tick) << endl;bench.step(); bench.step(); bench.step(); bench.step(); bench.step(); break;
-    }
+   }
 
    }
 
@@ -289,7 +330,7 @@ int main(int argc, char* argv[]) {
       cout << "Register mismatch at register " << dec << bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1));
       cout << " simulator value: " << setfill('0') << setw(16) << hex << bench.read_register_core1(bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1))) << endl;
       golden_model.show_state(1);
-      cout << dec << (bench.tickcount + bench.dump_tick) << endl;bench.step(); bench.step(); bench.step(); bench.step(); bench.step(); break;
+     cout << dec << (bench.tickcount + bench.dump_tick) << endl;bench.step(); bench.step(); bench.step(); bench.step(); bench.step(); break;
     }
 
    }
@@ -303,7 +344,7 @@ int main(int argc, char* argv[]) {
         // cout << "peripheral read" << endl;
         __uint32_t p_instruction = golden_model.get_instruction(0);
         golden_model.step(0);
-        golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),0);
+        //golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),0);
       } else{
         golden_model.step(0);
       }
@@ -331,7 +372,7 @@ int main(int argc, char* argv[]) {
         __uint32_t p_instruction = golden_model.get_instruction(1);
         golden_model.step(1);
         //printf("came here");
-        golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),1);
+        //golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),1);
       } else{
         golden_model.step(1);
         //printf("came here");
@@ -361,7 +402,7 @@ int main(int argc, char* argv[]) {
         // cout << "peripheral read" << endl;
         __uint32_t p_instruction = golden_model.get_instruction(0);
         golden_model.step(0);
-        golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),0);
+        //golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),0);
       } else{
         golden_model.step(0);
       }
@@ -389,7 +430,7 @@ int main(int argc, char* argv[]) {
         __uint32_t p_instruction = golden_model.get_instruction(1);
         golden_model.step(1);
         //printf("came here");
-        golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),1);
+        //golden_model.set_register_with_value((p_instruction>>7)&0x1f, bench.get_register_value_core0((p_instruction>>7)&0x1f),1);
       } else{
         golden_model.step(1);
         //printf("came here");
@@ -415,8 +456,19 @@ int main(int argc, char* argv[]) {
 
     if (x == 1) { break; }
 
+    // // Check for test completion
+    // //VVADD
+    // if (bench.prev_pc == 0x100007f0) {
+    //   printf("Test complete \n");
+    //   #ifdef LOGGING
+    //         outFile.close();
+    //   #endif
+    //   tcflush(0, TCIFLUSH);
+    //   return 0; // Exit the program here with success.
+    // }
 
   }
+
 
   #ifdef LOGGING
   outFile_core0.close();

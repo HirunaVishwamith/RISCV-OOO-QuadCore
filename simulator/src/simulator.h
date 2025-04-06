@@ -501,9 +501,6 @@ class simulator {
     return 0;
   }
 
-
-  
-
   void set_probe(unsigned long address) { tb -> prober_offset = address; }
   unsigned long get_probe() { return tb -> prober_accessLong; }
 

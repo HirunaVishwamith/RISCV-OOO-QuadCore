@@ -91,6 +91,7 @@ class Interconnect extends Module {
 
   //Arbiter connecting
   Arbiter.io.AWVALID_0 := io.acePort0.AWVALID
+  Arbiter.io.AWBAR_0 := io.acePort0.AWBAR(0)
   io.acePort0.AWREADY := Arbiter.io.AWREADY_0
   Arbiter.io.WVALID_0 := io.acePort0.WVALID
   Arbiter.io.WLAST_0 := io.acePort0.WLAST
@@ -107,6 +108,7 @@ class Interconnect extends Module {
   io.acePort1.ARREADY := Arbiter.io.ARREADY_1
 
   Arbiter.io.AWVALID_2 := io.acePort2.AWVALID
+  Arbiter.io.AWBAR_2 := io.acePort2.AWBAR(0)
   io.acePort2.AWREADY := Arbiter.io.AWREADY_2
   Arbiter.io.WVALID_2 := io.acePort2.WVALID
   Arbiter.io.WLAST_2 := io.acePort2.WLAST

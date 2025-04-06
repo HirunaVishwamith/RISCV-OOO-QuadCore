@@ -101,6 +101,7 @@ class CacheModule (
   arbiter.request.request := requestScheduler.requestOut
   arbiter.replayRequest <> replayUnit.responseOut
   arbiter.coherencyRequest <> aceUnit.coherencyRequest
+  arbiter.writeInstuctionCommitFired := writeInstructionCommit.fired
 
   //Cachelookup
   cacheLookup.branchOps := branchOps
@@ -155,8 +156,10 @@ class CacheModule (
   commitFifo.invalidateEnable := false.B
 
   //Enqueue from responseOut of cacheLookup
-  when(cacheLookup.toResponse.request.valid && cacheLookup.toResponse.request.core.instruction(6,0) === "b0000011".U){
+  when(cacheLookup.toResponse.request.valid && cacheLookup.toResponse.request.branch.valid && cacheLookup.toResponse.request.core.instruction(6,0) === "b0000011".U){
     commitFifo.write.data := cacheLookup.toResponse.request
+  } .elsewhen(peripheralUnit.responseOut.request.valid){
+    commitFifo.write.data := peripheralUnit.responseOut.request
   }
   //BranchOps
   commitFifo.branchOps := branchOps

@@ -1,32 +1,43 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Wed Apr  2 14:25:50 2025
+[*] Sat Apr  5 16:22:21 2025
 [*]
 [dumpfile] "/mnt/Uni/FYP/Full-core/Multicore_Processor_final_debug/system_trace.vcd"
-[dumpfile_mtime] "Wed Apr  2 13:00:33 2025"
-[dumpfile_size] 328139067
+[dumpfile_mtime] "Sat Apr  5 16:11:13 2025"
+[dumpfile_size] 314529173
 [savefile] "/mnt/Uni/FYP/Full-core/Multicore_Processor_final_debug/vvadd.gtkw"
-[timestart] 557780
+[timestart] 490213
 [size] 1920 998
-[pos] -1 -1
-*-3.900000 557811 556550 557570 558180 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-[markername] A1.Ins in
-[markername] B1.Ins processing
+[pos] -961 -1
+*-3.900000 490240 490880 490250 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[markername] A0.LW commit
+[markername] B0.Data Out
 [treeopen] TOP.
 [treeopen] TOP.system.
 [treeopen] TOP.system.core0.
 [treeopen] TOP.system.core0.memAccess.
-[treeopen] TOP.system.core1.memAccess.
+[treeopen] TOP.system.core0.memAccess.aceUnit.
+[treeopen] TOP.system.core0.memAccess.requestScheduler.
+[treeopen] TOP.system.core1.memAccess.requestScheduler.
 [sst_width] 333
-[signals_width] 394
+[signals_width] 462
 [sst_expanded] 1
 [sst_vpaned_height] 293
 @28
 TOP.clock
-@c00200
--Core_0
 @800200
+-Core_0
 -RequestScheduler
+-BranchOpos
+@28
+TOP.system.core0.memAccess.branchOps_valid
+@22
+TOP.system.core0.memAccess.branchOps_branchMask[4:0]
+@28
+TOP.system.core0.memAccess.branchOps_passed
+@1000200
+-BranchOpos
+@c00200
 -RequestIn
 @28
 TOP.system.core0.memAccess.requestScheduler.requestIn_valid
@@ -36,15 +47,124 @@ TOP.system.core0.memAccess.requestScheduler.requestIn_address[31:0]
 TOP.system.core0.memAccess.requestScheduler.requestIn_branch_mask[4:0]
 TOP.system.core0.memAccess.requestScheduler.requestIn_core_prfDest[5:0]
 TOP.system.core0.memAccess.requestScheduler.requestIn_core_robAddr[3:0]
-@1000200
+@1401200
 -RequestIn
+@c00200
+-InorderQueu
+@28
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_ready
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_valid
+@22
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_core_instruction[31:0]
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_address[31:0]
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_branch_mask[4:0]
+@28
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_branch_valid
+@22
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_core_prfDest[5:0]
+TOP.system.core0.memAccess.requestScheduler.inorderQueue_write_data_core_robAddr[3:0]
+@1401200
+-InorderQueu
+@c00200
+-RequestOut
+@28
+TOP.system.core0.memAccess.requestScheduler.requestOut_writeData_valid
+TOP.system.core0.memAccess.requestScheduler.requestOut_valid
+@22
+TOP.system.core0.memAccess.requestScheduler.requestOut_core_instruction[31:0]
+TOP.system.core0.memAccess.requestScheduler.requestOut_address[31:0]
+TOP.system.core0.memAccess.requestScheduler.requestOut_branch_mask[4:0]
+@28
+TOP.system.core0.memAccess.requestScheduler.requestOut_branch_valid
+@22
+TOP.system.core0.memAccess.requestScheduler.requestOut_core_prfDest[5:0]
+TOP.system.core0.memAccess.requestScheduler.requestOut_core_robAddr[3:0]
+@1401200
+-RequestOut
+@1000200
 -RequestScheduler
+@800200
+-Arbiter
+@c00200
+-OperationBuffer
+@28
+TOP.system.core0.memAccess.arbiter.operationBuffer_valid
+TOP.system.core0.memAccess.arbiter.operationBufferReadyWire
+@22
+TOP.system.core0.memAccess.arbiter.operationBuffer_core_instruction[31:0]
+TOP.system.core0.memAccess.arbiter.operationBuffer_address[31:0]
+TOP.system.core0.memAccess.arbiter.operationBuffer_branch_mask[4:0]
+@28
+TOP.system.core0.memAccess.arbiter.operationBuffer_branch_valid
+@22
+TOP.system.core0.memAccess.arbiter.operationBuffer_core_prfDest[5:0]
+TOP.system.core0.memAccess.arbiter.operationBuffer_core_robAddr[3:0]
+TOP.system.core0.memAccess.arbiter.operationBuffer_writeData_data[63:0]
+@28
+TOP.system.core0.memAccess.arbiter.operationBuffer_writeData_valid
+@1401200
+-OperationBuffer
+@c00200
+-InorderBuffer
+@28
+TOP.system.core0.memAccess.arbiter.inorderBuffer_valid
+TOP.system.core0.memAccess.arbiter.inorderBufferReadyWire
+@22
+TOP.system.core0.memAccess.arbiter.inorderBuffer_core_instruction[31:0]
+TOP.system.core0.memAccess.arbiter.inorderBuffer_address[31:0]
+TOP.system.core0.memAccess.arbiter.inorderBuffer_branch_mask[4:0]
+@28
+TOP.system.core0.memAccess.arbiter.inorderBuffer_branch_valid
+@22
+TOP.system.core0.memAccess.arbiter.inorderBuffer_core_prfDest[5:0]
+TOP.system.core0.memAccess.arbiter.inorderBuffer_core_robAddr[3:0]
+@1401200
+-InorderBuffer
+@1000200
+-Arbiter
+@800200
+-PeripheralUnit
+-ReadRequestBuffer
+@28
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_valid
+@22
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_core_instruction[31:0]
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_address[31:0]
+@28
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_branch_valid
+@22
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_core_prfDest[5:0]
+TOP.system.core0.memAccess.peripheralUnit.readRequestBuffer_core_robAddr[3:0]
+@1000200
+-ReadRequestBuffer
+@800200
+-AR_Bus
+@28
+TOP.system.core0.memAccess.peripheralUnit.bus_ARREADY
+TOP.system.core0.memAccess.peripheralUnit.bus_ARVALID
+@22
+TOP.system.core0.memAccess.peripheralUnit.bus_ARADDR[31:0]
+TOP.system.core0.memAccess.peripheralUnit.bus_ARLEN[7:0]
+@1000200
+-AR_Bus
+@800200
+-R_Bus
+@28
+TOP.system.core0.memAccess.peripheralUnit.bus_RREADY
+TOP.system.core0.memAccess.peripheralUnit.bus_RVALID
+TOP.system.core0.memAccess.peripheralUnit.bus_RLAST
+@22
+TOP.system.core0.memAccess.peripheralUnit.bus_RDATA[31:0]
+@1000200
+-R_Bus
+-PeripheralUnit
 @200
 -
 @800200
 -CacheLookup
-@c00200
 -RequestIn
+@29
+TOP.system.core0.memAccess.cacheLookup.requestType[1:0]
 @28
 TOP.system.core0.memAccess.cacheLookup.request_holdInOrder
 TOP.system.core0.memAccess.cacheLookup.request_ready
@@ -67,7 +187,7 @@ TOP.system.core0.memAccess.cacheLookup.request_request_cacheLine_cacheLine[511:0
 @28
 TOP.system.core0.memAccess.cacheLookup.request_request_cacheLine_invalidated
 TOP.system.core0.memAccess.cacheLookup.request_request_cacheLine_valid
-@1401200
+@1000200
 -RequestIn
 @28
 TOP.system.core0.memAccess.cacheLookup.operationValid
@@ -109,32 +229,29 @@ TOP.system.core0.memAccess.cacheLookup.replayBuffer_writeData_data[63:0]
 TOP.system.core0.memAccess.cacheLookup.replayBuffer_writeData_valid
 @1401200
 -ReplayBuffer
-@c00200
+@800200
 -MemResponseBuffer
+@28
+TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_valid
 @22
+TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_instruction[31:0]
 TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_address[31:0]
+TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_prfDest[5:0]
+TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_robAddr[3:0]
 TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_branch_mask[4:0]
 @28
 TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_branch_valid
 @22
-TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_instruction[31:0]
-TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_prfDest[5:0]
-TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_core_robAddr[3:0]
-@28
-TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_valid
-@22
 TOP.system.core0.memAccess.cacheLookup.memoryResponseBuffer_writeData_data[63:0]
 @28
 TOP.system.core0.memAccess.cacheLookup.toMemoryResponseValidWire
-@1401200
--MemResponseBuffer
 @1000200
+-MemResponseBuffer
 -CacheLookup
 @200
 -
-@800200
--ACEUnit
 @c00200
+-ACEUnit
 -ReadRequest
 @28
 TOP.system.core0.memAccess.aceUnit.readRequest_ready
@@ -184,6 +301,17 @@ TOP.system.core0.memAccess.aceUnit.bus_RRESP[3:0]
 @1000200
 -R_Bus
 @c00200
+-AC_bus
+@28
+TOP.system.core0.memAccess.aceUnit.bus_ACREADY
+TOP.system.core0.memAccess.aceUnit.bus_ACVALID
+@22
+TOP.system.core0.memAccess.aceUnit.bus_ACADDR[31:0]
+@28
+TOP.system.core0.memAccess.aceUnit.bus_ACSNOOP[3:0]
+@1401200
+-AC_bus
+@c00200
 -CD_Bus
 @22
 TOP.system.core0.memAccess.aceUnit.bus_CDDATA[63:0]
@@ -193,11 +321,33 @@ TOP.system.core0.memAccess.aceUnit.bus_CDREADY
 TOP.system.core0.memAccess.aceUnit.bus_CDVALID
 @1401200
 -CD_Bus
-@1000200
--ACEUnit
-@200
--
 @c00200
+-ResponseBuffer
+@22
+TOP.system.core0.memAccess.aceUnit.responseBuffer_address[31:0]
+TOP.system.core0.memAccess.aceUnit.responseBuffer_branch_mask[4:0]
+@28
+TOP.system.core0.memAccess.aceUnit.responseBuffer_branch_valid
+@22
+TOP.system.core0.memAccess.aceUnit.responseBuffer_cacheLine_cacheLine[511:0]
+@28
+TOP.system.core0.memAccess.aceUnit.responseBuffer_cacheLine_invalidated
+TOP.system.core0.memAccess.aceUnit.responseBuffer_cacheLine_response[1:0]
+TOP.system.core0.memAccess.aceUnit.responseBuffer_cacheLine_valid
+@22
+TOP.system.core0.memAccess.aceUnit.responseBuffer_core_instruction[31:0]
+TOP.system.core0.memAccess.aceUnit.responseBuffer_core_prfDest[5:0]
+TOP.system.core0.memAccess.aceUnit.responseBuffer_core_robAddr[3:0]
+@28
+TOP.system.core0.memAccess.aceUnit.responseBuffer_valid
+@22
+TOP.system.core0.memAccess.aceUnit.responseBuffer_writeData_data[63:0]
+@28
+TOP.system.core0.memAccess.aceUnit.responseBuffer_writeData_valid
+@1401200
+-ResponseBuffer
+-ACEUnit
+@800200
 -ResponseOut
 @28
 TOP.system.core0.memAccess.responseOut_valid
@@ -206,10 +356,12 @@ TOP.system.core0.memAccess.responseOut_instruction[31:0]
 TOP.system.core0.memAccess.responseOut_prfDest[5:0]
 TOP.system.core0.memAccess.responseOut_robAddr[3:0]
 TOP.system.core0.memAccess.responseOut_result[63:0]
-@1401200
+@1000200
 -ResponseOut
-@200
--
+@28
+TOP.system.core0.memAccess.loadCommit_ready
+TOP.system.core0.memAccess.loadCommit_state
+TOP.system.core0.memAccess.loadCommit_valid
 @c00200
 -CommitFifo
 -toResponse
@@ -247,26 +399,23 @@ TOP.system.core0.memAccess.loadCommit_valid
 @1401200
 -LoadCommit
 -CommitFifo
-@200
--
-@c00200
--Rob_commit
+@800200
+-ROB
 @28
+TOP.system.core0.rob.commit_ready
 TOP.system.core0.rob.commit_fired
 @22
 TOP.system.core0.rob.commit_instruction[31:0]
-TOP.system.core0.rob.commit_pc[63:0]
 TOP.system.core0.rob.commit_prfDest[5:0]
 TOP.system.core0.rob.commit_robAddr[3:0]
-@1401200
--Rob_commit
+TOP.system.core0.rob.commit_pc[63:0]
+@1000200
+-ROB
 -Core_0
 @200
 -
--
-@c00201
--Core_1
 @c00200
+-Core_1
 -RequestScheduler
 -RequestIn
 @28
@@ -280,9 +429,8 @@ TOP.system.core1.memAccess.requestScheduler.requestIn_core_robAddr[3:0]
 @1401200
 -RequestIn
 -RequestScheduler
-@c00200
--Cachelookup
 @800200
+-Cachelookup
 -RequestIn
 @28
 TOP.system.core1.memAccess.cacheLookup.requestType[1:0]
@@ -300,15 +448,11 @@ TOP.system.core1.memAccess.cacheLookup.request_requestType[1:0]
 TOP.system.core1.memAccess.cacheLookup.request_request_branch_mask[4:0]
 @28
 TOP.system.core1.memAccess.cacheLookup.request_request_branch_valid
-@22
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_cacheLine[511:0]
-@28
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_invalidated
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_response[1:0]
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_valid
-@22
 TOP.system.core1.memAccess.cacheLookup.request_request_writeData_data[63:0]
-@28
 TOP.system.core1.memAccess.cacheLookup.request_request_writeData_valid
 @1000200
 -RequestIn
@@ -328,7 +472,7 @@ TOP.system.core1.memAccess.cacheLookup.tagBRAM_wrData[91:0]
 TOP.system.core1.memAccess.cacheLookup.tagBRAM_wrEna
 @1401200
 -tagBRAM
-@c00200
+@800200
 -ToCoherency
 @28
 TOP.system.core1.memAccess.cacheLookup.toCoherency_request_valid
@@ -338,47 +482,51 @@ TOP.system.core1.memAccess.cacheLookup.toCoherency_request_cacheLine[511:0]
 @28
 TOP.system.core1.memAccess.cacheLookup.toCoherency_request_dataValid
 TOP.system.core1.memAccess.cacheLookup.toCoherency_request_response[1:0]
-@1401200
+@1000200
 -ToCoherency
 -Cachelookup
 @800200
 -ACEUnit
-@c00200
--AR_bus
+-AR_Bus
 @28
-TOP.system.core1.memAccess.aceUnit.bus_ARVALID
 TOP.system.core1.memAccess.aceUnit.bus_ARREADY
+TOP.system.core1.memAccess.aceUnit.bus_ARVALID
 @22
 TOP.system.core1.memAccess.aceUnit.bus_ARADDR[31:0]
+@28
 TOP.system.core1.memAccess.aceUnit.bus_ARSNOOP[3:0]
-@1401200
--AR_bus
-@c00200
--R_bus
+@1000200
+-AR_Bus
+@800200
+-B_bus
 @28
-TOP.system.core1.memAccess.aceUnit.bus_RVALID
 TOP.system.core1.memAccess.aceUnit.bus_RREADY
-@22
-TOP.system.core1.memAccess.aceUnit.bus_RDATA[63:0]
-@28
+TOP.system.core1.memAccess.aceUnit.bus_RVALID
 TOP.system.core1.memAccess.aceUnit.bus_RLAST
 @22
+TOP.system.core1.memAccess.aceUnit.bus_RDATA[63:0]
 TOP.system.core1.memAccess.aceUnit.bus_RRESP[3:0]
-@1401200
--R_bus
-@22
-TOP.system.core0.memAccess.aceUnit.bus_ACADDR[31:0]
+@1000200
+-B_bus
+@800200
+-AC_bus
 @28
-TOP.system.core0.memAccess.aceUnit.bus_ACREADY
+TOP.system.core1.memAccess.aceUnit.bus_ACREADY
+TOP.system.core1.memAccess.aceUnit.bus_ACVALID
 @22
-TOP.system.core0.memAccess.aceUnit.bus_ACSNOOP[3:0]
+TOP.system.core1.memAccess.aceUnit.bus_ACADDR[31:0]
 @28
-TOP.system.core0.memAccess.aceUnit.bus_ACVALID
-TOP.system.core0.memAccess.aceUnit.bus_CRREADY
-@22
-TOP.system.core0.memAccess.aceUnit.bus_CRRESP[4:0]
+TOP.system.core1.memAccess.aceUnit.bus_ACSNOOP[3:0]
+@1000200
+-AC_bus
+@800200
+-CR_bus
 @28
-TOP.system.core0.memAccess.aceUnit.bus_CRVALID
+TOP.system.core1.memAccess.aceUnit.bus_CRREADY
+TOP.system.core1.memAccess.aceUnit.bus_CRVALID
+TOP.system.core1.memAccess.aceUnit.bus_CRRESP[4:0]
+@1000200
+-CR_bus
 @800200
 -CD_bus
 @28
@@ -391,7 +539,7 @@ TOP.system.core1.memAccess.aceUnit.bus_CDLAST
 @1000200
 -CD_bus
 -ACEUnit
-@1401201
+@1401200
 -Core_1
 [pattern_trace] 1
 [pattern_trace] 0
