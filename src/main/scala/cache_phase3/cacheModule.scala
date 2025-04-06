@@ -70,7 +70,7 @@ class CacheModule (
 
   //Scheduler connections
   requestScheduler.branchOps := branchOps
-  canAllocate := requestScheduler.canAllocate && commitFifo.isEmpty
+  canAllocate := requestScheduler.canAllocate && !commitFifo.isFull
   
   requestScheduler.requestIn.valid := request.valid
   requestScheduler.requestIn.address := request.address
