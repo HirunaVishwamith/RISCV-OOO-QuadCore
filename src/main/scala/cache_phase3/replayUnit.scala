@@ -66,14 +66,14 @@ class replayUnit extends Module{
   responseWaitFIFO.invalidateEnable := false.B
   responseWaitFIFO.invalidateAddr := 0.U
   writeBackFIFO.read.ready := false.B
-
+  
   zeroInit(requestWaitFIFO.write.data)
   zeroInit(responseWaitFIFO.write.data)
   zeroInit(writeBackFIFO.write.data)
 
   requestWaitFIFO.branchOps <> branchOps
   responseWaitFIFO.branchOps <> branchOps
-
+    
   //! Debug only
   when(!(isPauseForBoolean && branchOps.valid)){
     requestIn.ready := requestWaitFIFO.write.ready

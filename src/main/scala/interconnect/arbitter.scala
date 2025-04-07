@@ -106,7 +106,7 @@ class arbiter extends Module {
 
     switch(stateReg){
 		is(0.U){//00_000: core_0_D$
-            when(!io.AWVALID_0 & !io.ARVALID_0){
+            when(!io.AWVALID_0 && !io.ARVALID_0){
                 stateReg := 8.U
             }.elsewhen(io.ARVALID_0){
 				stateReg := 1.U
@@ -169,7 +169,7 @@ class arbiter extends Module {
 
 		}
 		is(8.U){ //01_000: core_0_I$
-            when(!io.AWVALID_1 & !io.ARVALID_1){
+            when(!io.AWVALID_1 && !io.ARVALID_1){
                 stateReg := 16.U
             }.elsewhen(io.ARVALID_1){
 				stateReg := 9.U
@@ -225,7 +225,7 @@ class arbiter extends Module {
 			io.select := 6.U
 		}
 		is(16.U){ //10_000: core_1_D$
-            when(!io.AWVALID_2 & !io.ARVALID_2){
+            when(!io.AWVALID_2 && !io.ARVALID_2){
                 stateReg := 24.U
             }.elsewhen(io.ARVALID_2){
 				stateReg := 17.U
@@ -255,7 +255,7 @@ class arbiter extends Module {
 				stateReg := 20.U
             }
             io.enq_valid := false.B
-            barreg_core1 := io.AWBAR_0
+            barreg_core1 := io.AWBAR_2
 		}
 		is(21.U){ //10_101: core_1_D$_wa_enq
             when(barreg_core1){
@@ -274,7 +274,7 @@ class arbiter extends Module {
 				stateReg := 22.U
             }
             io.enq_valid := false.B
-            wlast_core1 := io.WLAST_1
+            wlast_core1 := io.WLAST_2
 		}
 		is(23.U){ //10_111:core_1_D$_wd_enq
             when(!wlast_core1){
@@ -287,7 +287,7 @@ class arbiter extends Module {
 			io.select := 10.U
 		}
 		is(24.U){ //11_000: core_1_I$
-            when(!io.AWVALID_3 & !io.ARVALID_3){
+            when(!io.AWVALID_3 && !io.ARVALID_3){
                 stateReg := 0.U
             }.elsewhen(io.ARVALID_3){
 				stateReg := 25.U

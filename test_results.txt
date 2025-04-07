@@ -1,4 +1,7 @@
-fyp18-riscv-emulator/riscv-tests/images/rv64mi-p-ld-misaligned.bin: test fail
-fyp18-riscv-emulator/riscv-tests/images/rv64mi-p-lh-misaligned.bin: test fail
-fyp18-riscv-emulator/riscv-tests/images/rv64mi-p-lw-misaligned.bin: test fail
-fyp18-riscv-emulator/riscv-tests/images/rv64mi-p-mcsr.bin: test pass
+Time : Apr  7 2025 18:12:18
+vvadd: test pass
+Time : Apr  7 2025 18:14:21
+matmul: test fail
+Time : Apr  7 2025 18:14:36
+filter: test pass
+Time : Apr  7 2025 18:19:05

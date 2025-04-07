@@ -158,6 +158,10 @@ int main(int argc, char* argv[]) {
   int now_i = 0;
   int now_j = 0;
 
+    int core0_count=0;
+    int core1_count=0;
+    int stop_count=1000;
+
   while (1 || (bench.tickcount + bench.dump_tick) < 800351768UL) {
     //cout<<"instruction is :" << golden_model.get_instruction()<<endl;
     //cout<<"pc is :" << golden_model.get_pc()<<endl;
@@ -189,10 +193,12 @@ int main(int argc, char* argv[]) {
     } */
 
    
+     core0_count++;
+     core1_count++;
 
 
    if(x==0 || x==3 || x==2){
-    i++;
+    core0_count=0;
     outFile_core0 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(0) << " ";
     outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << " ";
@@ -205,7 +211,7 @@ int main(int argc, char* argv[]) {
    }
 
   if(x==3 || x==4 || x==5){
-    j++;
+    core1_count=0;
     outFile_core1 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(1) << " ";
     outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(1) << " ";
@@ -213,6 +219,17 @@ int main(int argc, char* argv[]) {
     outFile_core1 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
   }
 
+    if(core0_count==stop_count ){
+     printf("leon Time out \n");
+     printf("core0 stoped \n");
+     break;
+   }
+
+   if(core1_count==stop_count){
+     printf("leon Time out \n");
+     printf("core1 stoped \n");
+     break;
+   }
 
   //printf("prev_i = %d, now_i = %d, prev_j = %d, now_j = %d\n", prev_i, now_i, prev_j, now_j);
 
@@ -456,16 +473,17 @@ int main(int argc, char* argv[]) {
 
     if (x == 1) { break; }
 
-    // // Check for test completion
-    // //VVADD
-    // if (bench.prev_pc == 0x100007f0) {
-    //   printf("Test complete \n");
-    //   #ifdef LOGGING
-    //         outFile.close();
-    //   #endif
-    //   tcflush(0, TCIFLUSH);
-    //   return 0; // Exit the program here with success.
-    // }
+    // Check for test completion
+    //VVADD
+    if (bench.prev_pc_core0 == 0x10000810) {
+      printf("Test complete \n");
+      #ifdef LOGGING
+      outFile_core0.close();
+      outFile_core1.close();
+      #endif
+      tcflush(0, TCIFLUSH);
+      return 0; // Exit the program here with success.
+    }
 
   }
 

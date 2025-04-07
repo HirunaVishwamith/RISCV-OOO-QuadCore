@@ -1,26 +1,28 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Sat Apr  5 15:37:16 2025
+[*] Mon Apr  7 12:58:41 2025
 [*]
 [dumpfile] "/mnt/Uni/FYP/Full-core/Multicore_Processor_final_debug/system_trace.vcd"
-[dumpfile_mtime] "Sat Apr  5 15:10:40 2025"
-[dumpfile_size] 318327393
+[dumpfile_mtime] "Mon Apr  7 12:58:41 2025"
+[dumpfile_size] 9144100422
 [savefile] "/mnt/Uni/FYP/Full-core/Multicore_Processor_final_debug/matmul.gtkw"
-[timestart] 562719
+[timestart] 293541
 [size] 1920 998
-[pos] -961 -1
-*-3.900000 562770 562730 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-[markername] A1.Ins in
+[pos] -1 -1
+*-3.900000 293580 294040 294030 294010 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[markername] A1. LW commit
+[markername] B1. LW Resp Out
+[markername] C1.LW in lookup
 [treeopen] TOP.
 [treeopen] TOP.system.
-[treeopen] TOP.system.core0.memAccess.
 [treeopen] TOP.system.core0.memAccess.aceUnit.
 [treeopen] TOP.system.core0.memAccess.requestScheduler.
 [treeopen] TOP.system.core1.
 [treeopen] TOP.system.core1.memAccess.
+[treeopen] TOP.system.core1.memAccess.aceUnit.
 [treeopen] TOP.system.core1.memAccess.requestScheduler.
 [sst_width] 333
-[signals_width] 366
+[signals_width] 510
 [sst_expanded] 1
 [sst_vpaned_height] 293
 @28
@@ -415,7 +417,7 @@ TOP.system.core1.memAccess.requestScheduler.requestIn_core_prfDest[5:0]
 TOP.system.core1.memAccess.requestScheduler.requestIn_core_robAddr[3:0]
 @1000200
 -RequestIn
-@800200
+@c00200
 -RequestOut
 @28
 TOP.system.core1.memAccess.requestScheduler.requestOut_valid
@@ -423,9 +425,7 @@ TOP.system.core1.memAccess.requestScheduler.requestOut_valid
 TOP.system.core1.memAccess.requestScheduler.requestOut_core_instruction[31:0]
 TOP.system.core1.memAccess.requestScheduler.requestOut_address[31:0]
 TOP.system.core1.memAccess.requestScheduler.requestOut_core_prfDest[5:0]
-@23
 TOP.system.core1.memAccess.requestScheduler.requestOut_core_robAddr[3:0]
-@22
 TOP.system.core1.memAccess.requestScheduler.requestOut_branch_mask[4:0]
 @28
 TOP.system.core1.memAccess.requestScheduler.requestOut_branch_valid
@@ -439,12 +439,12 @@ TOP.system.core1.memAccess.requestScheduler.requestOut_cacheLine_valid
 TOP.system.core1.memAccess.requestScheduler.requestOut_writeData_data[63:0]
 @28
 TOP.system.core1.memAccess.requestScheduler.requestOut_writeData_valid
-@1000200
+@1401200
 -RequestOut
+@1000200
 -RequestScheduler
-@c00200
--Cachelookup
 @800200
+-Cachelookup
 -RequestIn
 @28
 TOP.system.core1.memAccess.cacheLookup.requestType[1:0]
@@ -462,10 +462,13 @@ TOP.system.core1.memAccess.cacheLookup.request_requestType[1:0]
 TOP.system.core1.memAccess.cacheLookup.request_request_branch_mask[4:0]
 @28
 TOP.system.core1.memAccess.cacheLookup.request_request_branch_valid
+@22
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_cacheLine[511:0]
+@29
+TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_valid
+@28
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_invalidated
 TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_response[1:0]
-TOP.system.core1.memAccess.cacheLookup.request_request_cacheLine_valid
 TOP.system.core1.memAccess.cacheLookup.request_request_writeData_data[63:0]
 TOP.system.core1.memAccess.cacheLookup.request_request_writeData_valid
 @1000200
@@ -498,10 +501,10 @@ TOP.system.core1.memAccess.cacheLookup.toCoherency_request_dataValid
 TOP.system.core1.memAccess.cacheLookup.toCoherency_request_response[1:0]
 @1401200
 -ToCoherency
+@1000200
 -Cachelookup
-@c00200
--ACEUnit
 @800200
+-ACEUnit
 -AR_Bus
 @28
 TOP.system.core1.memAccess.aceUnit.bus_ARREADY
@@ -553,7 +556,6 @@ TOP.system.core1.memAccess.aceUnit.bus_CDDATA[63:0]
 TOP.system.core1.memAccess.aceUnit.bus_CDLAST
 @1000200
 -CD_bus
-@1401200
 -ACEUnit
 @800200
 -ResponseOut\
