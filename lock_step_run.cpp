@@ -46,7 +46,7 @@ void disable_raw_mode() {
 void signal_callback_handler(int signum) {
   golden_model.show_state(0);
   // disable_raw_mode();
-  tcflush(0, TCIFLUSH); 
+  tcflush(0, TCIFLUSH);
   // Terminate program
   exit(signum);
 }
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
   signal(SIGINT, signal_callback_handler);
 
   // enable_raw_mode();
-  
+
   keystroke_buffer keys_rx;
   keys_rx.reader = 0;
   keys_rx.writer = 0;
@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
   //bench.step_nodump();
   unsigned long sim_prev = 0x80100000UL;
 	printf("Simulation start time: %s %s\n", __DATE__, __TIME__);
-  int count = 0; 
+  int count = 0;
   int i=0;
   int j=0;
   int prev_i=1;
@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
     // if (keys_rx.reader != keys_rx.writer) { keys_rx.reader += golden_model.load_rx_char(keys_rx.char_buffer[keys_rx.reader]); }
 
     #ifdef LOGGING
-    /* if (golden_model.get_instruction() == 0x00100073) 
+    /* if (golden_model.get_instruction() == 0x00100073)
       break; */
 
     //unsigned long current_symbol = golden_model.get_symbom_index(golden_model.get_pc(), old_symbol);
@@ -192,32 +192,32 @@ int main(int argc, char* argv[]) {
       old_symbol = current_symbol;
     } */
 
-   
+
      core0_count++;
      core1_count++;
 
 
-   if(x==0 || x==3 || x==2){
-    core0_count=0;
-    outFile_core0 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
-    outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(0) << " ";
-    outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << " ";
-    outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
-    outFile_core0 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
-
-    // outState <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << endl;
-    // outState << golden_model.return_state(0);
-
-   }
-
-  if(x==3 || x==4 || x==5){
-    core1_count=0;
-    outFile_core1 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
-    outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(1) << " ";
-    outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(1) << " ";
-    outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
-    outFile_core1 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
-  }
+     if(x==0 || x==3 || x==2){
+      core0_count=0;
+      outFile_core0 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
+      outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(0) << " ";
+      outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << " ";
+      outFile_core0 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
+      outFile_core0 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
+  
+      // outState <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(0) << endl;
+      // outState << golden_model.return_state(0);
+  
+     }
+  
+    if(x==3 || x==4 || x==5){
+      core1_count=0;
+      outFile_core1 <<  setfill('0') << setw(16) << dec <<  (bench.dump_tick)  << " ";
+      outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_pc(1) << " ";
+      outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.get_instruction(1) << " ";
+      outFile_core1 <<  setfill('0') << setw(16) << hex << golden_model.fetch_long(PROBE_DOUBLE) << " ";
+      outFile_core1 <<  setfill('0') << setw(16) << hex << bench.get_probe() << endl;
+    }
 
     if(core0_count==stop_count ){
      printf("leon Time out \n");
@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
       outFile_core0 << "load access at " << setfill('0') << setw(16) << hex << mem_address;
       outFile_core0 << " reading data " << setfill('0') << setw(16) << hex << data << "\n";
       break;
-    
+
     case 2:
       if (mem_address >= 0x80000001 || mem_address < 0x90000000) { break; }
       outFile_core0 << "store access at " << setfill('0') << setw(16) << hex << mem_address;
@@ -272,16 +272,16 @@ int main(int argc, char* argv[]) {
       outFile_core0 << "atomic access at " << setfill('0') << setw(16) << hex << mem_address;
       outFile_core0 << " reading data " << setfill('0') << setw(16) << hex << data << "\n";
       break;
-        
+
     default:
       break;
     } */
 
-    
+
     #endif
 
     /* if (
-      golden_model.check_for_mem_access(&mem_address, &data) && 
+      golden_model.check_for_mem_access(&mem_address, &data) &&
       (mem_address == 0x10000004) &&
       (data == 0))
     {
@@ -294,7 +294,7 @@ int main(int argc, char* argv[]) {
     /* if (timer_interr == 0)
       if (duration.count() > 10000000) { printf("Timer might be working"); timer_interr++; } */
     if (duration.count() > 10000000) {
-      //printf("Timer might be working"); 
+      //printf("Timer might be working");
       //start = high_resolution_clock::now();
       //golden_model.set_mtip();
     }
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
     /**
      * bench.prev_pc - executed pc by cpu pipeline
      * golden_model.get_pc - The next instruction to be executed
-     * 
+     *
      * This happens because we get bench.prev_pc after it is executed.
      * This needs to be fixed to have a common semantic for both pc values
     */
@@ -314,15 +314,15 @@ int main(int argc, char* argv[]) {
    //core0
    //printf("x value: %d \n",x);
    if( x==0 || x==3){
-    if (bench.prev_pc_core0 != golden_model.get_pc(0)) { 
+    if (bench.prev_pc_core0 != golden_model.get_pc(0)) {
       printf("core0 \n");
       cout << "PC mismatech emulator: " << hex << golden_model.get_pc(0);
       cout << " emulator instruction: " << setfill('0') << setw(8) << hex << golden_model.get_instruction(0);      cout << " simulator: " << hex << bench.prev_pc_core0 << endl;
-      golden_model.show_state(0); 
+      golden_model.show_state(0);
       break;
     }
 
-    if (bench.check_registers_core0(golden_model.reg_file(0), golden_model.get_mstatus(0))) { 
+    if (bench.check_registers_core0(golden_model.reg_file(0), golden_model.get_mstatus(0))) {
       printf("core0 \n");
       cout << "Register mismatch at register " << dec << bench.check_registers_core0(golden_model.reg_file(0), golden_model.get_mstatus(0));
       cout << " simulator value: " << setfill('0') << setw(16) << hex << bench.read_register_core0(bench.check_registers_core0(golden_model.reg_file(0), golden_model.get_mstatus(0))) << endl;
@@ -332,17 +332,17 @@ int main(int argc, char* argv[]) {
 
    }
 
-    
+
    if(x==3 || x==4){
-    if (bench.prev_pc_core1 != golden_model.get_pc(1)) { 
+    if (bench.prev_pc_core1 != golden_model.get_pc(1)) {
       printf("core1 \n");
       cout << "PC mismatech emulator: " << hex << golden_model.get_pc(1);
       cout << " emulator instruction: " << setfill('0') << setw(8) << hex << golden_model.get_instruction(1);      cout << " simulator: " << hex << bench.prev_pc_core1 << endl;
-      golden_model.show_state(1); 
+      golden_model.show_state(1);
       break;
     }
 
-    if (bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1))) { 
+    if (bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1))) {
       printf("core1 \n");
       cout << "Register mismatch at register " << dec << bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1));
       cout << " simulator value: " << setfill('0') << setw(16) << hex << bench.read_register_core1(bench.check_registers_core1(golden_model.reg_file(1), golden_model.get_mstatus(1))) << endl;
@@ -367,7 +367,7 @@ int main(int argc, char* argv[]) {
       }
 
       while (
-        ((golden_model.get_instruction(0) & 0x0000007f) == 0x73) && 
+        ((golden_model.get_instruction(0) & 0x0000007f) == 0x73) &&
         (golden_model.get_instruction(0) & 0x00007000)
       )
       {
@@ -396,7 +396,7 @@ int main(int argc, char* argv[]) {
       }
 
       while (
-        ((golden_model.get_instruction(1) & 0x0000007f) == 0x73) && 
+        ((golden_model.get_instruction(1) & 0x0000007f) == 0x73) &&
         (golden_model.get_instruction(1) & 0x00007000)
       )
       {
@@ -406,12 +406,12 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if (x == 2) { 
+    if (x == 2) {
       if (DUMP_CONDITION) {
         x = bench.step();
       } else {
         x = bench.step_nodump();
-      } 
+      }
       // printf("Taking interrupt\n");
       // golden_model.show_state();
       if (x == 1) { return 1; }
@@ -424,7 +424,7 @@ int main(int argc, char* argv[]) {
         golden_model.step(0);
       }
       while (
-        ((golden_model.get_instruction(0) & 0x0000007f) == 0x73) && 
+        ((golden_model.get_instruction(0) & 0x0000007f) == 0x73) &&
         (golden_model.get_instruction(0) & 0x00007000)
       )
       {
@@ -433,12 +433,12 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if (x == 5) { 
+    if (x == 5) {
       if (DUMP_CONDITION) {
         x = bench.step();
       } else {
         x = bench.step_nodump();
-      } 
+      }
       // printf("Taking interrupt\n");
       // golden_model.show_state();
       if (x == 1) { return 1; }
@@ -453,14 +453,14 @@ int main(int argc, char* argv[]) {
         //printf("came here");
       }
       while (
-        ((golden_model.get_instruction(1) & 0x0000007f) == 0x73) && 
+        ((golden_model.get_instruction(1) & 0x0000007f) == 0x73) &&
         (golden_model.get_instruction(1) & 0x00007000)
       )
       {
         golden_model.step(1);
         //printf("came here");
       }
-    } 
+    }
     //printf("x value last: %d \n",x);
 
     x = 1;
@@ -474,8 +474,8 @@ int main(int argc, char* argv[]) {
     if (x == 1) { break; }
 
     // Check for test completion
-    //VVADD
-    if (bench.prev_pc_core0 == 0x10000810) {
+    //Histo
+    if (bench.prev_pc_core0 == 0x100008a4) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();
@@ -496,7 +496,7 @@ int main(int argc, char* argv[]) {
   printf("Test failed: Time-out!\n");
   printf("Total ticks: %ld \n", (bench.tickcount+bench.dump_tick));
   // disable_raw_mode();
-  tcflush(0, TCIFLUSH); 
+  tcflush(0, TCIFLUSH);
 
   return 1;
 }

@@ -1,7 +1,9 @@
-Time : Apr  7 2025 18:12:18
+Time : Apr 11 2025 13:13:00
 vvadd: test pass
-Time : Apr  7 2025 18:14:21
-matmul: test fail
-Time : Apr  7 2025 18:14:36
+Time : Apr 11 2025 13:14:00
+matmul: test pass
+Time : Apr 11 2025 13:14:00
 filter: test pass
-Time : Apr  7 2025 18:19:05
+Time : Apr 11 2025 13:14:00
+csaxpy: test pass
+Time : Apr 11 2025 13:14:00

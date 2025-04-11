@@ -72,10 +72,13 @@ sim: .stamp.sim
 		fi; \
 		rm fyp18-riscv-emulator/src/Image; \
 	done
+	@touch .stamp.test_all_images
 
 .stamp.bulk_test : .stamp.sim
-	$(MAKE) test_all_images;
+	@rm -f test_results.txt
+	# $(MAKE) test_all_images;
 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) vvadd; \
 	STATUS=$$?; \
 	if [ $$STATUS -eq 0 ]; then \
@@ -84,6 +87,7 @@ sim: .stamp.sim
 		echo "vvadd: test fail" >> test_results.txt; \
 	fi; \
 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) matmul; \
 	STATUS=$$?; \
 	if [ $$STATUS -eq 0 ]; then \
@@ -92,6 +96,7 @@ sim: .stamp.sim
 		echo "matmul: test fail" >> test_results.txt; \
 	fi; \
 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) filter; \
 	STATUS=$$?; \
 	if [ $$STATUS -eq 0 ]; then \
@@ -100,6 +105,7 @@ sim: .stamp.sim
 		echo "filter: test fail" >> test_results.txt; \
 	fi; \
 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) csaxpy; \
 	STATUS=$$?; \
 	if [ $$STATUS -eq 0 ]; then \
@@ -108,6 +114,7 @@ sim: .stamp.sim
 		echo "csaxpy: test fail" >> test_results.txt; \
 	fi; \
 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) histo; \
 	STATUS=$$?; \
 	if [ $$STATUS -eq 0 ]; then \
@@ -116,7 +123,7 @@ sim: .stamp.sim
 		echo "histo: test fail" >> test_results.txt; \
 	fi; \
 
-VERILATOR_INCLUDE = /home/mcrparadox/verilator/include
+VERILATOR_INCLUDE = /usr/share/verilator/share/verilator/include
 
 .stamp.runLockStep: .stamp.lock_step_run.out fyp18-riscv-emulator/src/Image
 	./lock_step_run.out
@@ -165,7 +172,7 @@ simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheReg
 
 simulator/src/bench.out: simulator/src/obj_dir simulator/src/simulator.h simulator/src/bench.cpp
 	cd simulator/src; \
-	g++ -O3 -I /usr/share/verilator/include -I obj_dir /usr/share/verilator/include/verilated.cpp /usr/share/verilator/include/verilated_vcd_c.cpp bench.cpp obj_dir/Vsystem__ALL.a -o bench.out
+	g++ -O3 -I $(VERILATOR_INCLUDE) -I obj_dir $(VERILATOR_INCLUDE)/verilated.cpp $(VERILATOR_INCLUDE)/verilated_vcd_c.cpp bench.cpp obj_dir/Vsystem__ALL.a -o bench.out
 
 runSim: simulator/src/bench.out
 	cd simulator/src/; \
