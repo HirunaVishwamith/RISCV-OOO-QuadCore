@@ -64,7 +64,7 @@ class l2_Rob(arlen:Int=7,beat_size:Int=64 ,addr_w: Int = 3,idWidth: Int = 2, add
     val readyInputBuffer = WireDefault(true.B) 
     val readyOutputBuffer = WireDefault(true.B) 
 
-    val concatData = Cat(inputBuffer.data)
+    val concatData = Cat(inputBuffer.data.reverse)
     val arlen_ = 7.U
 
 
@@ -131,7 +131,7 @@ class l2_Rob(arlen:Int=7,beat_size:Int=64 ,addr_w: Int = 3,idWidth: Int = 2, add
     io.axi.ARREADY := readyInputBuffer
 
     io.axi.RDATA := R_data(axi_RDATA_counter)
-    io.axi.RLAST := (axi_RDATA_counter===io.axi.ARLEN)
+    io.axi.RLAST := (axi_RDATA_counter===io.axi.ARLEN) 
     io.axi.RID := enq_fifo.io.deq.bits.id
     io.axi.RVALID :=  enq_fifo.io.deq.valid && enq_fifo.io.deq.bits.valid && enq_fifo.io.deq.bits.is_R
     io.axi.RRESP := 0.U
