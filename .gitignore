@@ -13,5 +13,6 @@ Image1
 *.out
 *.log
 *.vcd
+*.vcd.fst
 firrtl_black_box_resource_files.f
 Makefile
