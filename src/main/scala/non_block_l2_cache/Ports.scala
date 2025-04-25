@@ -13,7 +13,7 @@ import chisel3.experimental.IO
   }
 
   class AXIlite1(
-    idWidth : Int=2,
+    idWidth : Int=3,
     addressWidth : Int=32,
     dataWidth : Int=256
   ) extends Bundle{
@@ -40,7 +40,7 @@ import chisel3.experimental.IO
   }
 
   class AXIlite2(
-    idWidth : Int=2,
+    idWidth : Int=3,
     addressWidth : Int=32,
     dataWidth : Int=256
   ) extends Bundle{
@@ -66,13 +66,13 @@ import chisel3.experimental.IO
       val BREADY = Input(Bool())
       val BVALID = Output(Bool())
       val BRESP = Output(Bool())
-      val BID = Output(Bool())
+      val BID = Output(UInt(idWidth.W))
   }
 
 
 
   class AXIlite(
-    idWidth : Int=2,
+    idWidth : Int=3,
     addressWidth : Int=32,
     dataWidth : Int=64
   ) extends Bundle{

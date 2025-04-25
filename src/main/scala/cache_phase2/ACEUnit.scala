@@ -25,7 +25,7 @@ class ACEUnit(
   val coherencyRequest = IO(new coherencyRequest)
   // val storeData = IO(new storeData)
   val bus = IO(new ACE(
-    idWidth = 2,
+    idWidth = 3,
     addressWidth = addrWidth,
     busWidth = dPort_WIDTH, 
   ))

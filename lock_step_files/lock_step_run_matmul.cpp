@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
 
     //Matmul
     // Check for test completion
-    if (bench.prev_pc_core0 == 0x10000874) {
+    if (bench.prev_pc_core0 == 0x100007a0) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();

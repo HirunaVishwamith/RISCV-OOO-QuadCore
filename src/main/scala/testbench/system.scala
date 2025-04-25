@@ -70,6 +70,60 @@ class system extends Module {
     allRobFiresOut := rob.commit.fired
   })
 
+  val core2 = Module(new core(
+    dPort_id = 4,
+    peripheral_id = 2,
+    iPort_id = 5,
+    mhart_id = 2
+  ){
+    val registersOut = IO(Output(decode.registersOut.cloneType))
+    val architecturalRegisterFile = VecInit(decode.retiredRenamedTable.table.map(i => prf.registerFileOutput(i)))
+    registersOut zip architecturalRegisterFile foreach { case(x, y) => x := y }
+    registersOut.reverse.head := decode.registersOut.head
+
+    val robOut = IO(Output(new Bundle() {
+      val commitFired = Bool()
+      val pc         = UInt(64.W)
+      val interrupt = Bool()
+    }))
+    robOut.commitFired := rob.commit.fired
+    robOut.pc          := rob.commit.pc
+    robOut.interrupt   := decode.writeBackResult.instruction === "h80000073".U(64.W)
+    when((rob.commit.instruction(6, 0) === "b1110011".U) && (rob.commit.instruction(14, 12).orR)) { robOut.commitFired := false.B }
+
+    val allRobFiresOut = IO(Output(Bool()))
+    allRobFiresOut := rob.commit.fired
+  })
+
+
+  val core3 = Module(new core(
+    dPort_id = 6,
+    peripheral_id = 3,
+    iPort_id = 7,
+    mhart_id = 3
+  ){
+    val registersOut = IO(Output(decode.registersOut.cloneType))
+    val architecturalRegisterFile = VecInit(decode.retiredRenamedTable.table.map(i => prf.registerFileOutput(i)))
+    registersOut zip architecturalRegisterFile foreach { case(x, y) => x := y }
+    registersOut.reverse.head := decode.registersOut.head
+
+    val robOut = IO(Output(new Bundle() {
+      val commitFired = Bool()
+      val pc         = UInt(64.W)
+      val interrupt = Bool()
+    }))
+    robOut.commitFired := rob.commit.fired
+    robOut.pc          := rob.commit.pc
+    robOut.interrupt   := decode.writeBackResult.instruction === "h80000073".U(64.W)
+    when((rob.commit.instruction(6, 0) === "b1110011".U) && (rob.commit.instruction(14, 12).orR)) { robOut.commitFired := false.B }
+
+    val allRobFiresOut = IO(Output(Bool()))
+    allRobFiresOut := rob.commit.fired
+  })
+
+
+
+
   val memory = Module(new mainMemory)
   val interconnect = Module(new Interconnect)
   val LLC = Module(new l2_mem) 
@@ -297,6 +351,235 @@ class system extends Module {
   interconnect.io.acePort3.CDDATA := core1.iPort.CDDATA
   interconnect.io.acePort3.CDLAST := core1.iPort.CDLAST
 
+
+ 
+  //core2.dPort to interconnect connection
+  //AW
+  interconnect.io.acePort4.AWVALID := core2.dPort.AWVALID
+  core2.dPort.AWREADY := interconnect.io.acePort4.AWREADY
+  interconnect.io.acePort4.AWID := core2.dPort.AWID
+  interconnect.io.acePort4.AWADDR := core2.dPort.AWADDR
+  interconnect.io.acePort4.AWSNOOP := core2.dPort.AWSNOOP
+  interconnect.io.acePort4.AWBAR := core2.dPort.AWBAR
+
+  //W
+  interconnect.io.acePort4.WVALID := core2.dPort.WVALID
+  interconnect.io.acePort4.WDATA := core2.dPort.WDATA
+  interconnect.io.acePort4.WLAST := core2.dPort.WLAST
+  core2.dPort.WREADY := interconnect.io.acePort4.WREADY
+
+  //B
+  core2.dPort.BVALID := interconnect.io.acePort4.BVALID
+  core2.dPort.BID := interconnect.io.acePort4.BID
+  core2.dPort.BRESP := interconnect.io.acePort4.BRESP
+  interconnect.io.acePort4.BREADY := core2.dPort.BREADY
+
+  //AR
+  interconnect.io.acePort4.ARVALID := core2.dPort.ARVALID
+  core2.dPort.ARREADY := interconnect.io.acePort4.ARREADY
+  interconnect.io.acePort4.ARID := core2.dPort.ARID
+  interconnect.io.acePort4.ARADDR := core2.dPort.ARADDR
+  interconnect.io.acePort4.ARSNOOP := core2.dPort.ARSNOOP
+  interconnect.io.acePort4.ARBAR := core2.dPort.ARBAR
+
+  //R
+  core2.dPort.RVALID := interconnect.io.acePort4.RVALID
+  interconnect.io.acePort4.RREADY := core2.dPort.RREADY
+  core2.dPort.RID := interconnect.io.acePort4.RID
+  core2.dPort.RDATA := interconnect.io.acePort4.RDATA
+  core2.dPort.RRESP := interconnect.io.acePort4.RRESP
+  core2.dPort.RLAST := interconnect.io.acePort4.RLAST
+
+  //AC
+  core2.dPort.ACVALID := interconnect.io.acePort4.ACVALID
+  core2.dPort.ACADDR := interconnect.io.acePort4.ACADDR
+  core2.dPort.ACSNOOP := interconnect.io.acePort4.ACSNOOP
+  core2.dPort.ACPROT := 2.U
+  interconnect.io.acePort4.ACREADY := core2.dPort.ACREADY
+
+  //CR
+  interconnect.io.acePort4.CRVALID := core2.dPort.CRVALID
+  interconnect.io.acePort4.CRRESP := core2.dPort.CRRESP
+  core2.dPort.CRREADY := interconnect.io.acePort4.CRREADY
+
+  //CD
+  interconnect.io.acePort4.CDVALID := core2.dPort.CDVALID
+  core2.dPort.CDREADY := interconnect.io.acePort4.CDREADY
+  interconnect.io.acePort4.CDDATA := core2.dPort.CDDATA
+  interconnect.io.acePort4.CDLAST := core2.dPort.CDLAST
+
+
+
+  //core2.iPort to interconnect connection
+  //AW
+  interconnect.io.acePort5.AWVALID := core2.iPort.AWVALID
+  core2.iPort.AWREADY := interconnect.io.acePort5.AWREADY
+  interconnect.io.acePort5.AWID := core2.iPort.AWID
+  interconnect.io.acePort5.AWADDR := core2.iPort.AWADDR
+  interconnect.io.acePort5.AWSNOOP := core2.iPort.AWSNOOP
+  interconnect.io.acePort5.AWBAR := core2.iPort.AWBAR
+
+  //W
+  interconnect.io.acePort5.WVALID := core2.iPort.WVALID
+  interconnect.io.acePort5.WDATA := core2.iPort.WDATA
+  interconnect.io.acePort5.WLAST := core2.iPort.WLAST
+  core2.iPort.WREADY := interconnect.io.acePort5.WREADY
+
+  //B
+  core2.iPort.BVALID := interconnect.io.acePort5.BVALID
+  core2.iPort.BID := interconnect.io.acePort5.BID
+  core2.iPort.BRESP := interconnect.io.acePort5.BRESP
+  interconnect.io.acePort5.BREADY := core2.iPort.BREADY
+
+  //AR
+  interconnect.io.acePort5.ARVALID := core2.iPort.ARVALID
+  core2.iPort.ARREADY := interconnect.io.acePort5.ARREADY
+  interconnect.io.acePort5.ARID := core2.iPort.ARID
+  interconnect.io.acePort5.ARADDR := core2.iPort.ARADDR
+  interconnect.io.acePort5.ARSNOOP := core2.iPort.ARSNOOP
+  interconnect.io.acePort5.ARBAR := core2.iPort.ARBAR
+
+  //R
+  core2.iPort.RVALID := interconnect.io.acePort5.RVALID
+  interconnect.io.acePort5.RREADY := core2.iPort.RREADY
+  core2.iPort.RID := interconnect.io.acePort5.RID
+  core2.iPort.RDATA := interconnect.io.acePort5.RDATA
+  core2.iPort.RRESP := interconnect.io.acePort5.RRESP
+  core2.iPort.RLAST := interconnect.io.acePort5.RLAST
+
+  //AC
+  core2.iPort.ACVALID := interconnect.io.acePort5.ACVALID
+  core2.iPort.ACADDR := interconnect.io.acePort5.ACADDR
+  core2.iPort.ACSNOOP := interconnect.io.acePort5.ACSNOOP
+  core2.iPort.ACPROT := 2.U
+  interconnect.io.acePort5.ACREADY := core2.iPort.ACREADY
+
+  //CR
+  interconnect.io.acePort5.CRVALID := core2.iPort.CRVALID
+  interconnect.io.acePort5.CRRESP := core2.iPort.CRRESP
+  core2.iPort.CRREADY := interconnect.io.acePort5.CRREADY
+
+  //CD
+  interconnect.io.acePort5.CDVALID := core2.iPort.CDVALID
+  core2.iPort.CDREADY := interconnect.io.acePort5.CDREADY
+  interconnect.io.acePort5.CDDATA := core2.iPort.CDDATA
+  interconnect.io.acePort5.CDLAST := core2.iPort.CDLAST
+
+
+
+  //core3.dPort to interconnect connection
+  //AW
+  interconnect.io.acePort6.AWVALID := core3.dPort.AWVALID
+  core3.dPort.AWREADY := interconnect.io.acePort6.AWREADY
+  interconnect.io.acePort6.AWID := core3.dPort.AWID
+  interconnect.io.acePort6.AWADDR := core3.dPort.AWADDR
+  interconnect.io.acePort6.AWSNOOP := core3.dPort.AWSNOOP
+  interconnect.io.acePort6.AWBAR := core3.dPort.AWBAR
+
+  //W
+  interconnect.io.acePort6.WVALID := core3.dPort.WVALID
+  interconnect.io.acePort6.WDATA := core3.dPort.WDATA
+  interconnect.io.acePort6.WLAST := core3.dPort.WLAST
+  core3.dPort.WREADY := interconnect.io.acePort6.WREADY
+
+  //B
+  core3.dPort.BVALID := interconnect.io.acePort6.BVALID
+  core3.dPort.BID := interconnect.io.acePort6.BID
+  core3.dPort.BRESP := interconnect.io.acePort6.BRESP
+  interconnect.io.acePort6.BREADY := core3.dPort.BREADY
+
+  //AR
+  interconnect.io.acePort6.ARVALID := core3.dPort.ARVALID
+  core3.dPort.ARREADY := interconnect.io.acePort6.ARREADY
+  interconnect.io.acePort6.ARID := core3.dPort.ARID
+  interconnect.io.acePort6.ARADDR := core3.dPort.ARADDR
+  interconnect.io.acePort6.ARSNOOP := core3.dPort.ARSNOOP
+  interconnect.io.acePort6.ARBAR := core3.dPort.ARBAR
+
+  //R
+  core3.dPort.RVALID := interconnect.io.acePort6.RVALID
+  interconnect.io.acePort6.RREADY := core3.dPort.RREADY
+  core3.dPort.RID := interconnect.io.acePort6.RID
+  core3.dPort.RDATA := interconnect.io.acePort6.RDATA
+  core3.dPort.RRESP := interconnect.io.acePort6.RRESP
+  core3.dPort.RLAST := interconnect.io.acePort6.RLAST
+
+  //AC
+  core3.dPort.ACVALID := interconnect.io.acePort6.ACVALID
+  core3.dPort.ACADDR := interconnect.io.acePort6.ACADDR
+  core3.dPort.ACSNOOP := interconnect.io.acePort6.ACSNOOP
+  core3.dPort.ACPROT := 2.U
+  interconnect.io.acePort6.ACREADY := core3.dPort.ACREADY
+
+  //CR
+  interconnect.io.acePort6.CRVALID := core3.dPort.CRVALID
+  interconnect.io.acePort6.CRRESP := core3.dPort.CRRESP
+  core3.dPort.CRREADY := interconnect.io.acePort6.CRREADY
+
+  //CD
+  interconnect.io.acePort6.CDVALID := core3.dPort.CDVALID
+  core3.dPort.CDREADY := interconnect.io.acePort6.CDREADY
+  interconnect.io.acePort6.CDDATA := core3.dPort.CDDATA
+  interconnect.io.acePort6.CDLAST := core3.dPort.CDLAST
+
+
+
+  //core3.iPort to interconnect connection
+  //AW
+  interconnect.io.acePort7.AWVALID := core3.iPort.AWVALID
+  core3.iPort.AWREADY := interconnect.io.acePort7.AWREADY
+  interconnect.io.acePort7.AWID := core3.iPort.AWID
+  interconnect.io.acePort7.AWADDR := core3.iPort.AWADDR
+  interconnect.io.acePort7.AWSNOOP := core3.iPort.AWSNOOP
+  interconnect.io.acePort7.AWBAR := core3.iPort.AWBAR
+
+  //W
+  interconnect.io.acePort7.WVALID := core3.iPort.WVALID
+  interconnect.io.acePort7.WDATA := core3.iPort.WDATA
+  interconnect.io.acePort7.WLAST := core3.iPort.WLAST
+  core3.iPort.WREADY := interconnect.io.acePort7.WREADY
+
+  //B
+  core3.iPort.BVALID := interconnect.io.acePort7.BVALID
+  core3.iPort.BID := interconnect.io.acePort7.BID
+  core3.iPort.BRESP := interconnect.io.acePort7.BRESP
+  interconnect.io.acePort7.BREADY := core3.iPort.BREADY
+
+  //AR
+  interconnect.io.acePort7.ARVALID := core3.iPort.ARVALID
+  core3.iPort.ARREADY := interconnect.io.acePort7.ARREADY
+  interconnect.io.acePort7.ARID := core3.iPort.ARID
+  interconnect.io.acePort7.ARADDR := core3.iPort.ARADDR
+  interconnect.io.acePort7.ARSNOOP := core3.iPort.ARSNOOP
+  interconnect.io.acePort7.ARBAR := core3.iPort.ARBAR
+
+  //R
+  core3.iPort.RVALID := interconnect.io.acePort7.RVALID
+  interconnect.io.acePort7.RREADY := core3.iPort.RREADY
+  core3.iPort.RID := interconnect.io.acePort7.RID
+  core3.iPort.RDATA := interconnect.io.acePort7.RDATA
+  core3.iPort.RRESP := interconnect.io.acePort7.RRESP
+  core3.iPort.RLAST := interconnect.io.acePort7.RLAST
+
+  //AC
+  core3.iPort.ACVALID := interconnect.io.acePort7.ACVALID
+  core3.iPort.ACADDR := interconnect.io.acePort7.ACADDR
+  core3.iPort.ACSNOOP := interconnect.io.acePort7.ACSNOOP
+  core3.iPort.ACPROT := 2.U
+  interconnect.io.acePort7.ACREADY := core3.iPort.ACREADY
+
+  //CR
+  interconnect.io.acePort7.CRVALID := core3.iPort.CRVALID
+  interconnect.io.acePort7.CRRESP := core3.iPort.CRRESP
+  core3.iPort.CRREADY := interconnect.io.acePort7.CRREADY
+
+  //CD
+  interconnect.io.acePort7.CDVALID := core3.iPort.CDVALID
+  core3.iPort.CDREADY := interconnect.io.acePort7.CDREADY
+  interconnect.io.acePort7.CDDATA := core3.iPort.CDDATA
+  interconnect.io.acePort7.CDLAST := core3.iPort.CDLAST
+
+
   //Interconnect L2 connection to Memory
   //AW
   LLC.io.cache_axi.AWVALID := interconnect.io.L2.AWVALID
@@ -443,17 +726,28 @@ class system extends Module {
 
   val core0OutChar = IO(Output(peripherals.putChar0.cloneType))
   val core1OutChar = IO(Output(peripherals.putChar1.cloneType))
+  val core2OutChar = IO(Output(peripherals.putChar2.cloneType))
+  val core3OutChar = IO(Output(peripherals.putChar3.cloneType))
 
   core0OutChar := peripherals.putChar0
   core1OutChar := peripherals.putChar1
+  core2OutChar := peripherals.putChar2
+  core3OutChar := peripherals.putChar3
+
 
   core0.peripheral <> peripherals.client0
   core1.peripheral <> peripherals.client1
+  core2.peripheral <> peripherals.client2
+  core3.peripheral <> peripherals.client3
 
   core0.MTIP := peripherals.MTIP0
   core1.MTIP := peripherals.MTIP1
+  core2.MTIP := peripherals.MTIP2
+  core3.MTIP := peripherals.MTIP3
 
+  
 
+  //core0
   val registersOut0 = IO(Output(core0.registersOut.cloneType))
   val registersOutBuffer0 = Reg(registersOut0.cloneType)
   registersOut0 := Mux(core0.robOut.commitFired && RegNext(core0.robOut.commitFired, false.B), core0.registersOut ,registersOutBuffer0)
@@ -463,6 +757,9 @@ class system extends Module {
   robOut0 := core0.robOut
   when(RegNext(core0.allRobFiresOut, false.B)) { registersOutBuffer0 := core0.registersOut }
 
+
+
+  //core1
   val registersOut1 = IO(Output(core1.registersOut.cloneType))
   val registersOutBuffer1 = Reg(registersOut1.cloneType)
   registersOut1 := Mux(core1.robOut.commitFired && RegNext(core1.robOut.commitFired, false.B), core1.registersOut ,registersOutBuffer1)
@@ -472,10 +769,25 @@ class system extends Module {
   robOut1 := core1.robOut
   when(RegNext(core1.allRobFiresOut, false.B)) { registersOutBuffer1 := core1.registersOut }
 
+  //core2
+  val registersOut2 = IO(Output(core2.registersOut.cloneType))
+  val registersOutBuffer2 = Reg(registersOut2.cloneType)
+  registersOut2 := Mux(core2.robOut.commitFired && RegNext(core2.robOut.commitFired, false.B), core2.registersOut ,registersOutBuffer2)
+  registersOut2(32) := core2.registersOut(32)
 
+  val robOut2 = IO(Output(core2.robOut.cloneType))
+  robOut2 := core2.robOut
+  when(RegNext(core2.allRobFiresOut, false.B)) { registersOutBuffer2 := core2.registersOut }
 
+  //core3
+  val registersOut3 = IO(Output(core3.registersOut.cloneType))
+  val registersOutBuffer3 = Reg(registersOut3.cloneType)
+  registersOut3 := Mux(core3.robOut.commitFired && RegNext(core3.robOut.commitFired, false.B), core3.registersOut ,registersOutBuffer3)
+  registersOut3(32) := core3.registersOut(32)
 
-
+  val robOut3 = IO(Output(core3.robOut.cloneType))
+  robOut3 := core3.robOut
+  when(RegNext(core3.allRobFiresOut, false.B)) { registersOutBuffer3 := core3.registersOut }
 
 }
 

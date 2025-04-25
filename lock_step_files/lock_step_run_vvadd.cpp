@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
 
     // Check for test completion
     //VVADD
-    if (bench.prev_pc_core0 == 0x10000810) {
+    if (bench.prev_pc_core0 == 0x1000074c) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();

@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
 
     // Check for test completion
     //CSAXPY
-    if (bench.prev_pc_core0 == 0x10000808) {
+    if (bench.prev_pc_core0 == 0x10000740) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();

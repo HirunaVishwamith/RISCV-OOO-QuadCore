@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
 
     // Check for test completion
     //Filter
-    if (bench.prev_pc_core0 == 0x10000a38) {
+    if (bench.prev_pc_core0 == 0x10000944) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();

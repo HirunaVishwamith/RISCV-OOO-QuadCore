@@ -52,6 +52,9 @@ class simulator {
 
   uint64_t  prev_pc_core0;
   uint64_t prev_pc_core1;
+  uint64_t  prev_pc_core2;
+  uint64_t prev_pc_core3;
+
   unsigned long        tickcount;
   unsigned dump_tick;
   std::string accumulatedChars0;
@@ -201,6 +204,150 @@ class simulator {
   }
 
 
+  __uint64_t get_register_value_core2(__uint8_t rd) {
+    switch (rd) {
+    case 0:
+      return tb -> registersOut2_0;
+    case 1:
+      return tb -> registersOut2_1;
+    case 2:
+      return tb -> registersOut2_2;
+    case 3:
+      return tb -> registersOut2_3;
+    case 4:
+      return tb -> registersOut2_4;
+    case 5:
+      return tb -> registersOut2_5;
+    case 6:
+      return tb -> registersOut2_6;
+    case 7:
+      return tb -> registersOut2_7;
+    case 8:
+      return tb -> registersOut2_8;
+    case 9:
+      return tb -> registersOut2_9;
+    case 10:
+      return tb -> registersOut2_10;
+    case 11:
+      return tb -> registersOut2_11;
+    case 12:
+      return tb -> registersOut2_12;
+    case 13:
+      return tb -> registersOut2_13;
+    case 14:
+      return tb -> registersOut2_14;
+    case 15:
+      return tb -> registersOut2_15;
+    case 16:
+      return tb -> registersOut2_16;
+    case 17:
+      return tb -> registersOut2_17;
+    case 18:
+      return tb -> registersOut2_18;
+    case 19:
+      return tb -> registersOut2_19;
+    case 20:
+      return tb -> registersOut2_20;
+    case 21:
+      return tb -> registersOut2_21;
+    case 22:
+      return tb -> registersOut2_22;
+    case 23:
+      return tb -> registersOut2_23;
+    case 24:
+      return tb -> registersOut2_24;
+    case 25:
+      return tb -> registersOut2_25;
+    case 26:
+      return tb -> registersOut2_26;
+    case 27:
+      return tb -> registersOut2_27;
+    case 28:
+      return tb -> registersOut2_28;
+    case 29:
+      return tb -> registersOut2_29;
+    case 30:
+      return tb -> registersOut2_30;
+    case 31:
+      return tb -> registersOut2_31;
+    default:
+      return 0;
+    }
+  }
+
+
+  __uint64_t get_register_value_core3(__uint8_t rd) {
+    switch (rd) {
+    case 0:
+      return tb -> registersOut3_0;
+    case 1:
+      return tb -> registersOut3_1;
+    case 2:
+      return tb -> registersOut3_2;
+    case 3:
+      return tb -> registersOut3_3;
+    case 4:
+      return tb -> registersOut3_4;
+    case 5:
+      return tb -> registersOut3_5;
+    case 6:
+      return tb -> registersOut3_6;
+    case 7:
+      return tb -> registersOut3_7;
+    case 8:
+      return tb -> registersOut3_8;
+    case 9:
+      return tb -> registersOut3_9;
+    case 10:
+      return tb -> registersOut3_10;
+    case 11:
+      return tb -> registersOut3_11;
+    case 12:
+      return tb -> registersOut3_12;
+    case 13:
+      return tb -> registersOut3_13;
+    case 14:
+      return tb -> registersOut3_14;
+    case 15:
+      return tb -> registersOut3_15;
+    case 16:
+      return tb -> registersOut3_16;
+    case 17:
+      return tb -> registersOut3_17;
+    case 18:
+      return tb -> registersOut3_18;
+    case 19:
+      return tb -> registersOut3_19;
+    case 20:
+      return tb -> registersOut3_20;
+    case 21:
+      return tb -> registersOut3_21;
+    case 22:
+      return tb -> registersOut3_22;
+    case 23:
+      return tb -> registersOut3_23;
+    case 24:
+      return tb -> registersOut3_24;
+    case 25:
+      return tb -> registersOut3_25;
+    case 26:
+      return tb -> registersOut3_26;
+    case 27:
+      return tb -> registersOut3_27;
+    case 28:
+      return tb -> registersOut3_28;
+    case 29:
+      return tb -> registersOut3_29;
+    case 30:
+      return tb -> registersOut3_30;
+    case 31:
+      return tb -> registersOut3_31;
+    default:
+      return 0;
+    }
+  }
+
+
   __uint32_t waitForCore() {
 #ifdef CORE_BOOT_WAIT
     if (!(tb -> waitingForCore_waiting)) {
@@ -301,6 +448,9 @@ class simulator {
     // prev_pc_core0 = 0x80000000UL;
     prev_pc_core0 = 0x10000000UL;
     prev_pc_core1 = 0x10000000UL;
+    prev_pc_core2 = 0x10000000UL;
+    prev_pc_core3 = 0x10000000UL;
+
     printf("prev_pc_core0: 0x%lx\n", prev_pc_core0);
   }
 
@@ -319,15 +469,17 @@ class simulator {
     } */
     tick(++dump_tick, tb, tfp);
     #ifndef STEP_TIMEOUT
-    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) {
+    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired) && !(tb -> robOut2_commitFired) && !(tb -> robOut3_commitFired)) {
     #else
-    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) && i < STEP_TIMEOUT; i++) {
+    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired) && !(tb -> robOut2_commitFired) && !(tb -> robOut3_commitFired)) && i < STEP_TIMEOUT; i++) {
     #endif
     #ifdef SHOW_TERMINAL
     // if (tb ->core0OutChar_valid) { cout<<(char)(tb -> core0OutChar_byte)<<flush;}
     // if (tb ->core1OutChar_valid) { cout<< (char)(tb -> core1OutChar_byte)<<flush;}
     if (tb ->core0OutChar_valid) { accumulatedChars0 += (char)(tb -> core0OutChar_byte);}
     if (tb ->core1OutChar_valid) { accumulatedChars1 += (char)(tb -> core1OutChar_byte);}
+    if (tb ->core2OutChar_valid) { accumulatedChars2 += (char)(tb -> core2OutChar_byte);}
+    if (tb ->core3OutChar_valid) { accumulatedChars3 += (char)(tb -> core3OutChar_byte);}
 
     #endif
       tick(++dump_tick, tb, tfp);
@@ -341,27 +493,133 @@ class simulator {
     //printf("leoni prev_pc_core0: 0x%lx\n", tb -> robOut0_pc);
   
     //printf("Flags out: %d %d\n", tb -> robOut0_commitFired, tb -> robOut1_commitFired);
-    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
         prev_pc_core0 = tb -> robOut0_pc;
         prev_pc_core1 = tb -> robOut1_pc;
-        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 5; }
-        //printf("leon1 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        //printf("leon1 prev_pc_core1: 0x%lx\n", prev_pc_core1);
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 1;
+
+    }else if (tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut2_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 2;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
         return 3;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 4;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 5;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+
+        return 6;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut2_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 7;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 8;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut2_commitFired ){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 9;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 10;
+
+    }else if(tb -> robOut2_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 11;
+
     }else if(tb -> robOut0_commitFired){
         prev_pc_core0 = tb -> robOut0_pc;
-        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-        //printf("leon2 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        return 0;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        return 12;
+
     }else if(tb -> robOut1_commitFired){
         prev_pc_core1 = tb -> robOut1_pc;
-        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 5; }
-        //printf("leon3 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        return 4;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        return 13;
+
+    }else if(tb -> robOut2_commitFired){
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        return 14;
+
+    }else if(tb -> robOut3_commitFired){
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+        return 15;
+
     }else{
         printf("TIMEOUT IN SIMULATOR!!!\n");
-        return 1;
+        return 0;
     }
 
     
@@ -498,6 +756,79 @@ class simulator {
     if ( tb -> registersOut1_30 != correct[30] ) { return 30; }
     if ( tb -> registersOut1_31 != correct[31] ) { return 31; }
     if ( tb -> registersOut1_32 != mstatus) { return 32; }
+    return 0;
+  }
+
+
+  int check_registers_core2(std::vector<uint64_t> correct, uint64_t mstatus) {
+    if ( tb -> registersOut2_1 != correct[1] ) { return 1; }
+    if ( tb -> registersOut2_2 != correct[2] ) { return 2; }
+    if ( tb -> registersOut2_3 != correct[3] ) { return 3; }
+    if ( tb -> registersOut2_4 != correct[4] ) { return 4; }
+    if ( tb -> registersOut2_5 != correct[5] ) { return 5; }
+    if ( tb -> registersOut2_6 != correct[6] ) { return 6; }
+    if ( tb -> registersOut2_7 != correct[7] ) { return 7; }
+    if ( tb -> registersOut2_8 != correct[8] ) { return 8; }
+    if ( tb -> registersOut2_9 != correct[9] ) { return 9; }
+    if ( tb -> registersOut2_10 != correct[10] ) { return 10; }
+    if ( tb -> registersOut2_11 != correct[11] ) { return 11; }
+    if ( tb -> registersOut2_12 != correct[12] ) { return 12; }
+    if ( tb -> registersOut2_13 != correct[13] ) { return 13; }
+    if ( tb -> registersOut2_14 != correct[14] ) { return 14; }
+    if ( tb -> registersOut2_15 != correct[15] ) { return 15; }
+    if ( tb -> registersOut2_16 != correct[16] ) { return 16; }
+    if ( tb -> registersOut2_17 != correct[17] ) { return 17; }
+    if ( tb -> registersOut2_18 != correct[18] ) { return 18; }
+    if ( tb -> registersOut2_19 != correct[19] ) { return 19; }
+    if ( tb -> registersOut2_20 != correct[20] ) { return 20; }
+    if ( tb -> registersOut2_21 != correct[21] ) { return 21; }
+    if ( tb -> registersOut2_22 != correct[22] ) { return 22; }
+    if ( tb -> registersOut2_23 != correct[23] ) { return 23; }
+    if ( tb -> registersOut2_24 != correct[24] ) { return 24; }
+    if ( tb -> registersOut2_25 != correct[25] ) { return 25; }
+    if ( tb -> registersOut2_26 != correct[26] ) { return 26; }
+    if ( tb -> registersOut2_27 != correct[27] ) { return 27; }
+    if ( tb -> registersOut2_28 != correct[28] ) { return 28; }
+    if ( tb -> registersOut2_29 != correct[29] ) { return 29; }
+    if ( tb -> registersOut2_30 != correct[30] ) { return 30; }
+    if ( tb -> registersOut2_31 != correct[31] ) { return 31; }
+    if ( tb -> registersOut2_32 != mstatus) { return 32; }
+    return 0;
+  }
+
+  int check_registers_core3(std::vector<uint64_t> correct, uint64_t mstatus) {
+    if ( tb -> registersOut3_1 != correct[1] ) { return 1; }
+    if ( tb -> registersOut3_2 != correct[2] ) { return 2; }
+    if ( tb -> registersOut3_3 != correct[3] ) { return 3; }
+    if ( tb -> registersOut3_4 != correct[4] ) { return 4; }
+    if ( tb -> registersOut3_5 != correct[5] ) { return 5; }
+    if ( tb -> registersOut3_6 != correct[6] ) { return 6; }
+    if ( tb -> registersOut3_7 != correct[7] ) { return 7; }
+    if ( tb -> registersOut3_8 != correct[8] ) { return 8; }
+    if ( tb -> registersOut3_9 != correct[9] ) { return 9; }
+    if ( tb -> registersOut3_10 != correct[10] ) { return 10; }
+    if ( tb -> registersOut3_11 != correct[11] ) { return 11; }
+    if ( tb -> registersOut3_12 != correct[12] ) { return 12; }
+    if ( tb -> registersOut3_13 != correct[13] ) { return 13; }
+    if ( tb -> registersOut3_14 != correct[14] ) { return 14; }
+    if ( tb -> registersOut3_15 != correct[15] ) { return 15; }
+    if ( tb -> registersOut3_16 != correct[16] ) { return 16; }
+    if ( tb -> registersOut3_17 != correct[17] ) { return 17; }
+    if ( tb -> registersOut3_18 != correct[18] ) { return 18; }
+    if ( tb -> registersOut3_19 != correct[19] ) { return 19; }
+    if ( tb -> registersOut3_20 != correct[20] ) { return 20; }
+    if ( tb -> registersOut3_21 != correct[21] ) { return 21; }
+    if ( tb -> registersOut3_22 != correct[22] ) { return 22; }
+    if ( tb -> registersOut3_23 != correct[23] ) { return 23; }
+    if ( tb -> registersOut3_24 != correct[24] ) { return 24; }
+    if ( tb -> registersOut3_25 != correct[25] ) { return 25; }
+    if ( tb -> registersOut3_26 != correct[26] ) { return 26; }
+    if ( tb -> registersOut3_27 != correct[27] ) { return 27; }
+    if ( tb -> registersOut3_28 != correct[28] ) { return 28; }
+    if ( tb -> registersOut3_29 != correct[29] ) { return 29; }
+    if ( tb -> registersOut3_30 != correct[30] ) { return 30; }
+    if ( tb -> registersOut3_31 != correct[31] ) { return 31; }
+    if ( tb -> registersOut3_32 != mstatus) { return 32; }
     return 0;
   }
 
@@ -712,6 +1043,220 @@ class simulator {
     
     case 32:
       return tb -> registersOut1_32;
+    
+    default:
+      return 0UL;
+    }
+  }
+  
+__uint64_t read_register_core2(int rs) {
+    switch (rs)
+    {
+    case 0:
+      return 0UL;
+    
+    case 1:
+      return tb -> registersOut2_1;
+
+    case 2:
+      return tb -> registersOut2_2;
+
+    case 3:
+      return tb -> registersOut2_3;
+
+    case 4:
+      return tb -> registersOut2_4;
+
+    case 5:
+      return tb -> registersOut2_5;
+
+    case 6:
+      return tb -> registersOut2_6;
+
+    case 7:
+      return tb -> registersOut2_7;
+
+    case 8:
+      return tb -> registersOut2_8;
+
+    case 9:
+      return tb -> registersOut2_9;
+
+    case 10:
+      return tb -> registersOut2_10;
+    
+    case 11:
+      return tb -> registersOut2_11;
+
+    case 12:
+      return tb -> registersOut2_12;
+
+    case 13:
+      return tb -> registersOut2_13;
+
+    case 14:
+      return tb -> registersOut2_14;
+
+    case 15:
+      return tb -> registersOut2_15;
+
+    case 16:
+      return tb -> registersOut2_16;
+
+    case 17:
+      return tb -> registersOut2_17;
+
+    case 18:
+      return tb -> registersOut2_18;
+
+    case 19:
+      return tb -> registersOut2_19;
+    
+    case 20:
+      return tb -> registersOut2_20;
+    
+    case 21:
+      return tb -> registersOut2_21;
+
+    case 22:
+      return tb -> registersOut2_22;
+
+    case 23:
+      return tb -> registersOut2_23;
+
+    case 24:
+      return tb -> registersOut2_24;
+
+    case 25:
+      return tb -> registersOut2_25;
+
+    case 26:
+      return tb -> registersOut2_26;
+
+    case 27:
+      return tb -> registersOut2_27;
+
+    case 28:
+      return tb -> registersOut2_28;
+
+    case 29:
+      return tb -> registersOut2_29;
+    
+    case 30:
+      return tb -> registersOut2_30;
+    
+    case 31:
+      return tb -> registersOut2_31;
+    
+    case 32:
+      return tb -> registersOut2_32;
+    
+    default:
+      return 0UL;
+    }
+  }
+
+  __uint64_t read_register_core3(int rs) {
+    switch (rs)
+    {
+    case 0:
+      return 0UL;
+    
+    case 1:
+      return tb -> registersOut3_1;
+
+    case 2:
+      return tb -> registersOut3_2;
+
+    case 3:
+      return tb -> registersOut3_3;
+
+    case 4:
+      return tb -> registersOut3_4;
+
+    case 5:
+      return tb -> registersOut3_5;
+
+    case 6:
+      return tb -> registersOut3_6;
+
+    case 7:
+      return tb -> registersOut3_7;
+
+    case 8:
+      return tb -> registersOut3_8;
+
+    case 9:
+      return tb -> registersOut3_9;
+
+    case 10:
+      return tb -> registersOut3_10;
+    
+    case 11:
+      return tb -> registersOut3_11;
+
+    case 12:
+      return tb -> registersOut3_12;
+
+    case 13:
+      return tb -> registersOut3_13;
+
+    case 14:
+      return tb -> registersOut3_14;
+
+    case 15:
+      return tb -> registersOut3_15;
+
+    case 16:
+      return tb -> registersOut3_16;
+
+    case 17:
+      return tb -> registersOut3_17;
+
+    case 18:
+      return tb -> registersOut3_18;
+
+    case 19:
+      return tb -> registersOut3_19;
+    
+    case 20:
+      return tb -> registersOut3_20;
+    
+    case 21:
+      return tb -> registersOut3_21;
+
+    case 22:
+      return tb -> registersOut3_22;
+
+    case 23:
+      return tb -> registersOut3_23;
+
+    case 24:
+      return tb -> registersOut3_24;
+
+    case 25:
+      return tb -> registersOut3_25;
+
+    case 26:
+      return tb -> registersOut3_26;
+
+    case 27:
+      return tb -> registersOut3_27;
+
+    case 28:
+      return tb -> registersOut3_28;
+
+    case 29:
+      return tb -> registersOut3_29;
+    
+    case 30:
+      return tb -> registersOut3_30;
+    
+    case 31:
+      return tb -> registersOut3_31;
+    
+    case 32:
+      return tb -> registersOut3_32;
     
     default:
       return 0UL;

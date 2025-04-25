@@ -46,7 +46,7 @@ class composableInterface extends Bundle {
 //val fenceInstructions = IO(new composableInterface)
 
 class AXI(
-  idWidth: Int = 2,
+  idWidth: Int = 3,
   addressWidth: Int = 32,
   busWidth: Int //32
 )extends Bundle {
@@ -94,7 +94,7 @@ class AXI(
 }
 
 class ACE(
-  idWidth: Int = 2,
+  idWidth: Int = 3,
   addressWidth: Int = 32,
   busWidth: Int
 ) extends AXI(idWidth, addressWidth, busWidth){

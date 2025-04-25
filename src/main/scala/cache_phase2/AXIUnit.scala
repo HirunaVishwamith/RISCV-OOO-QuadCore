@@ -24,7 +24,7 @@ class AXIUnit(
   ))
   // val storeData = IO(new storeData)
   val bus = IO(new AXI(
-    idWidth = 2,
+    idWidth = 3,
     addressWidth = addrWidth,
     busWidth = peripheral_WIDTH, //32
   ))

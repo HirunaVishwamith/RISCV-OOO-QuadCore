@@ -15,6 +15,9 @@ csaxpy: .stamp.csaxpy
 .PHONY: histo
 histo: .stamp.histo
 
+.PHONY: linux
+linux: .stamp.linux
+
 .PHONY: test_all_images
 test_all_images: .stamp.test_all_images
 
@@ -31,31 +34,39 @@ sim: .stamp.sim
 	cp lock_step_files/lock_step_run_vvadd.cpp lock_step_run.cpp
 	cp benchmark/mt-vvadd.bin fyp18-riscv-emulator/src/Image 
 	$(MAKE) runLockStep; 
-	@touch .stamp.vvadd
+	touch .stamp.vvadd
 
 .stamp.matmul: .stamp.matmul .stamp.sim
 	cp lock_step_files/lock_step_run_matmul.cpp lock_step_run.cpp
 	cp benchmark/mt-matmul.bin fyp18-riscv-emulator/src/Image 
 	$(MAKE) runLockStep; 
-	@touch .stamp.matmul
+	touch .stamp.matmul
 
 .stamp.filter: .stamp.filter .stamp.sim
 	cp lock_step_files/lock_step_run_filter.cpp lock_step_run.cpp
 	cp benchmark/mt-mask-sfilter.bin fyp18-riscv-emulator/src/Image 
 	$(MAKE) runLockStep; 
-	@touch .stamp.filter
+	touch .stamp.filter
 
 .stamp.csaxpy: .stamp.csaxpy .stamp.sim
 	cp lock_step_files/lock_step_run_csaxpy.cpp lock_step_run.cpp
 	cp benchmark/mt-csaxpy.bin fyp18-riscv-emulator/src/Image 
 	$(MAKE) runLockStep; 
-	@touch .stamp.csaxpy
+	touch .stamp.csaxpy
 
 .stamp.histo: .stamp.histo .stamp.sim
 	cp lock_step_files/lock_step_run_histo.cpp lock_step_run.cpp
 	cp benchmark/mt-histo.bin fyp18-riscv-emulator/src/Image 
 	$(MAKE) runLockStep; 
-	@touch .stamp.histo
+	touch .stamp.histo
+
+.stamp.linux: .stamp.linux .stamp.sim
+	cp lock_step_files/lock_step_run.cpp lock_step_run.cpp
+	cp Image fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	$(MAKE) python_decode;
+	touch .stamp.linux 
 	
 .stamp.test_all_images: .stamp.sim
 	cp lock_step_files/lock_step_run_test.cpp lock_step_run.cpp
@@ -72,11 +83,11 @@ sim: .stamp.sim
 		fi; \
 		rm fyp18-riscv-emulator/src/Image; \
 	done
-	@touch .stamp.test_all_images
+	touch .stamp.test_all_images
 
 .stamp.bulk_test : .stamp.sim
 	@rm -f test_results.txt
-	# $(MAKE) test_all_images;
+# 	$(MAKE) test_all_images;
 
 	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
 	$(MAKE) vvadd; \
@@ -132,7 +143,7 @@ VERILATOR_INCLUDE = /usr/share/verilator/share/verilator/include
 	g++ -O3 -I $(VERILATOR_INCLUDE) -I simulator/src/obj_dir \
 		$(VERILATOR_INCLUDE)/verilated.cpp $(VERILATOR_INCLUDE)/verilated_vcd_c.cpp \
 		lock_step_run.cpp simulator/src/obj_dir/Vsystem__ALL.a -o lock_step_run.out
-		@touch .stamp.lock_step_run.out
+		touch .stamp.lock_step_run.out
 
 simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheRegisters.v
 	cd simulator/src/; \
@@ -168,7 +179,7 @@ simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheReg
 	verilator -Wall --trace -cc system.v; \
 	cd obj_dir/; \
 	make -f Vsystem.mk;
-	@touch .stamp.sim
+	touch .stamp.sim
 
 simulator/src/bench.out: simulator/src/obj_dir simulator/src/simulator.h simulator/src/bench.cpp
 	cd simulator/src; \
@@ -205,6 +216,16 @@ make zynq:
 fix_inotify_instances_reached:
 	# java.io.IOException: User limit of inotify instances reached or too many open files
 	echo 512 | sudo tee /proc/sys/fs/inotify/max_user_instances
+
+python_decode:
+	if [ $$STATUS -eq 0 ]; then \
+		echo "$$No errors yet"; \
+	else \
+    	. ~/.venv/bin/activate; \
+      	python decoder.py run_core0.log -o run_core0-decoded.log; \
+      	python decoder.py run_core1.log -o run_core1-decoded.log; \
+      	deactivate;\
+	fi; \
 
 .PHONY: clean
 clean:

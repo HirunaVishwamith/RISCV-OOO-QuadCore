@@ -6,7 +6,7 @@
  */
 
 #define MEM_SIZE 28
-#define NUM_HARTS 2
+#define NUM_HARTS 4
 
 /* EMULATOR INCLUDE HEADER FILES */
 
@@ -91,10 +91,10 @@ public:
     harts[i].hart_set_interrupts(memory);
   }
 
-  //void set_interrupts()
+ // void set_interrupts()
   //{
     //for (auto &r : harts)
-     //r.hart_set_interrupts();
+    // r.hart_set_interrupts();
   //}
 
   void show_registers()
