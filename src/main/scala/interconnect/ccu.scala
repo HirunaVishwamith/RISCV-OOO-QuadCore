@@ -1379,9 +1379,9 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_11 := 4.U
-			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b011".U(3.W))){
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b111".U(3.W))){
 				stateReg_11 := 4.U
-			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b011".U(3.W))){
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b111".U(3.W))){
 				stateReg_11 := 1.U
 			}.otherwise{
 				stateReg_11 := 0.U
@@ -1515,13 +1515,13 @@ class ccu extends Module {
 				select_buff := "b0010".U(4.W)
 			}.elsewhen(crpbuf_3_3(0)){
 				select_buff := "b0011".U(4.W)
-			}.elsewhen(crpbuf_3_0(0)){
+			}.elsewhen(crpbuf_3_4(0)){
 				select_buff := "b0100".U(4.W)
-			}.elsewhen(crpbuf_3_1(0)){
+			}.elsewhen(crpbuf_3_5(0)){
 				select_buff := "b0101".U(4.W)
-			}.elsewhen(crpbuf_3_2(0)){
+			}.elsewhen(crpbuf_3_6(0)){
 				select_buff := "b0110".U(4.W)
-			}.elsewhen(crpbuf_3_3(0)){
+			}.elsewhen(crpbuf_3_7(0)){
 				select_buff := "b0111".U(4.W)
 			}.otherwise{          //if it is data is not shared even if it is in the other local caches i take from L2
 				select_buff := "b1000".U(4.W)
