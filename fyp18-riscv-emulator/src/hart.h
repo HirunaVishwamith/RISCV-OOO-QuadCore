@@ -1429,7 +1429,7 @@ public:
             default:
               break;
             }
-            // printf("load_addr: %lu  wb_data: %016lx ",rd,wb_data);
+             //printf("load_address: %016lx, data: %lu , core: %lu \n", load_addr, load_data , rd);
           }
           else
           {
@@ -2301,5 +2301,6 @@ public:
         break;
       }
     }
+    //printf("leon load_address: %016lx, data: %lu , core: %lu , core: %lu \n", load_addr, load_data , rd ,reg_file[rd]);
   }
 };

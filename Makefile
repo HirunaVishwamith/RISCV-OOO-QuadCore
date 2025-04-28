@@ -224,6 +224,8 @@ python_decode:
     	. ~/.venv/bin/activate; \
       	python decoder.py run_core0.log -o run_core0-decoded.log; \
       	python decoder.py run_core1.log -o run_core1-decoded.log; \
+		python decoder.py run_core2.log -o run_core2-decoded.log; \
+      	python decoder.py run_core3.log -o run_core3-decoded.log; \
       	deactivate;\
 	fi; \
 

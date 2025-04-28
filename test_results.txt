@@ -1,10 +1,10 @@
-Time : Apr 25 2025 07:25:49
-vvadd: test fail
-Time : Apr 25 2025 07:28:10
-matmul: test fail
-Time : Apr 25 2025 07:28:16
-filter: test fail
-Time : Apr 25 2025 07:28:23
+Time : Apr 28 2025 22:54:27
+vvadd: test pass
+Time : Apr 28 2025 22:56:36
+matmul: test pass
+Time : Apr 28 2025 22:58:51
+filter: test pass
+Time : Apr 28 2025 22:58:51
 csaxpy: test fail
-Time : Apr 25 2025 07:28:32
+Time : Apr 28 2025 22:59:19
 histo: test fail

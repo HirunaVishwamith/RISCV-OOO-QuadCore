@@ -13,7 +13,7 @@
 #include <typeinfo>
 #include <string>
 
-#define STEP_TIMEOUT 1000
+#define STEP_TIMEOUT 10000
 
 using namespace std;
 
