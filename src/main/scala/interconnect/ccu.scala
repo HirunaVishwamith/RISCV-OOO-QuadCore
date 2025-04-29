@@ -665,7 +665,7 @@ class ccu extends Module {
 			core3.BVALID := true.B
 		}
 		is(6.U){//B4
-			when(core3.BREADY){
+			when(core4.BREADY){
 				stateReg_2 := 0.U
 			}.otherwise{
 				stateReg_2 := 6.U
@@ -673,7 +673,7 @@ class ccu extends Module {
 			core4.BVALID := true.B
 		}
 		is(7.U){//B5
-			when(core3.BREADY){
+			when(core5.BREADY){
 				stateReg_2 := 0.U
 			}.otherwise{
 				stateReg_2 := 7.U
@@ -681,7 +681,7 @@ class ccu extends Module {
 			core5.BVALID := true.B
 		}
 		is(8.U){//B6
-			when(core3.BREADY){
+			when(core6.BREADY){
 				stateReg_2 := 0.U
 			}.otherwise{
 				stateReg_2 := 8.U
@@ -689,7 +689,7 @@ class ccu extends Module {
 			core6.BVALID := true.B
 		}
 		is(9.U){//B7
-			when(core3.BREADY){
+			when(core7.BREADY){
 				stateReg_2 := 0.U
 			}.otherwise{
 				stateReg_2 := 9.U

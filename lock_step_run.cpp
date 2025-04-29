@@ -637,8 +637,8 @@ int main(int argc, char* argv[]) {
     //printf("x value dump: %d \n",x);
 
     // Check for test completion
-    //Histo
-    if (bench.prev_pc_core0 == 0x10000938) {
+    //CSAXPY
+    if (bench.prev_pc_core0 == 0x1000089c) {
       printf("Test complete \n");
       #ifdef LOGGING
       outFile_core0.close();
