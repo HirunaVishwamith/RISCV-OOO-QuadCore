@@ -1,10 +1,13 @@
-Time : May  3 2025 17:13:36
+Time : May  3 2025 20:16:00
+Program cycles: 6869
 vvadd: test pass
-Time : May  3 2025 17:17:46
+Time : May  3 2025 20:17:02
+Program cycles: 185725
 matmul: test pass
-Time : May  3 2025 17:19:53
+Time : May  3 2025 20:18:06
+Program cycles: 84988
 filter: test pass
-Time : May  3 2025 17:24:06
+Time : May  3 2025 20:20:06
 csaxpy: test fail
-Time : May  3 2025 17:49:40
+Time : May  3 2025 20:31:04
 histo: test fail
