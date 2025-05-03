@@ -467,7 +467,7 @@ class arbiter extends Module {
 				stateReg := 38.U
             }
             io.enq_valid := false.B
-            wlast_core3 := io.WLAST_4
+            wlast_core2 := io.WLAST_4
 		}
 		is(39.U){ //100_111:core_2_D$_wd_enq
             when(!wlast_core2){
@@ -567,7 +567,7 @@ class arbiter extends Module {
 				stateReg := 52.U
             }
             io.enq_valid := false.B
-            barreg_core1 := io.AWBAR_6
+            barreg_core3 := io.AWBAR_6
 		}
 		is(53.U){ //110_101: core_3_D$_wa_enq
             when(barreg_core3){

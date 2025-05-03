@@ -169,6 +169,11 @@ int main(int argc, char* argv[]) {
   int core2_count=0;
   int core3_count=0;
   int stop_count=5000;
+
+  //Performance check
+  int prog_count = 0;
+  bool prog_count_true = false;  
+
   while (1 || (bench.tickcount + bench.dump_tick) < 800351768UL) {
     //cout<<"instruction is :" << golden_model.get_instruction()<<endl;
     //cout<<"pc is :" << golden_model.get_pc()<<endl;
@@ -636,10 +641,25 @@ int main(int argc, char* argv[]) {
     if (x == 0) { break; }
     //printf("x value dump: %d \n",x);
 
+    //Performance check
+    //thread_entry
+    if (bench.prev_pc_core0 == 0x100002dc) {
+      prog_count_true = true;
+    //barrier
+    } else if (bench.prev_pc_core0 == 0x1000025c) {
+      prog_count_true = false;
+    }
+    if (prog_count_true) {
+      prog_count += 1;
+    }
     // Check for test completion
-    //Filter
+    //VVADD
     if (bench.prev_pc_core0 == 0x10000ac0) {
       printf("Test complete \n");
+      FILE *file = fopen("test_results.txt", "a");
+      printf("Program cycles: %d\n",prog_count);
+      fprintf(file, "Program cycles: %d\n", prog_count);
+      fclose(file);
       #ifdef LOGGING
       outFile_core0.close();
       outFile_core1.close();

@@ -530,7 +530,7 @@ class ccu extends Module {
 	deq_1 := false.B
 	deq_2 := false.B
 	val stateReg_1 = RegInit(0.U(3.W))
-	val stateReg_2 = RegInit(0.U(3.W))
+	val stateReg_2 = RegInit(0.U(4.W))
 
 	val write_back = RegInit(false.B)
 
@@ -1499,8 +1499,15 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0001".U(4.W)) || (tran_pbuf_3 === "b0111".U(4.W)) || (tran_pbuf_3 === "b0000".U(4.W)))){
 				stateReg_12 := 1.U
-			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0100".U(4.W)) || (tran_pbuf_3 === "b1011".U(4.W)))){
+			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0100".U(4.W)))){
 				stateReg_12 := 6.U
+			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b1011".U(4.W)))){
+				when(crpbuf_3_0(0) || crpbuf_3_1(0)  || crpbuf_3_2(0) ||  crpbuf_3_3(0) || crpbuf_3_4(0) || crpbuf_3_5(0) || crpbuf_3_6(0) || crpbuf_3_7(0)){
+					stateReg_12 := 1.U
+				}.otherwise{
+					stateReg_12 := 6.U
+					last_buff := true.B
+				}
 			}.otherwise{
 				stateReg_12 := 0.U
 			}

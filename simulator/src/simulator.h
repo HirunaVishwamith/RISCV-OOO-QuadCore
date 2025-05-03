@@ -354,7 +354,7 @@ class simulator {
       printf("ERROR: Core should be waiting during the process of programming DRAM");
       return 1;
     }
-    for (;tb -> waitingForCore_waiting;tick(++dump_tick, tb, tfp)) //here it is tick_nodump
+    for (;tb -> waitingForCore_waiting;tick_nodump(++dump_tick, tb, tfp)) //here it is tick_nodump
       printf("Cycles remaining waiting: %016lx \r", tb -> waitingForCore_timeRemaining);
 
     printf("\n");
@@ -380,11 +380,11 @@ class simulator {
 
     tb -> reset = 1;
     for(int i = 0; i < 20; i++){
-      tick(++dump_tick, tb, tfp); //here it is tick_nodump
+      tick_nodump(++dump_tick, tb, tfp); //here it is tick_nodump
     }
     tb -> reset = 0;
     for(int i = 0; i < 20; i++){
-      tick(++dump_tick, tb, tfp); //here it is tick_nodump
+      tick_nodump(++dump_tick, tb, tfp); //here it is tick_nodump
     }
 
     printf("*********************************Loading kernel image*********************************\n");
@@ -402,7 +402,7 @@ class simulator {
 			tb -> programmer_byte = *reinterpret_cast<unsigned long*>(&buffer.at(i));
       tb -> programmer_offset = i;
 			//cout << buffer.at(i)&255 << endl;
-			tick(++dump_tick, tb, tfp);	//here it is tick_nodump
+			tick_nodump(++dump_tick, tb, tfp);	//here it is tick_nodump
       // if (progress != (i*100)/buffer.size()) 
       printf("Kernel Loaded: %ld \%\r", (i*100)/buffer.size());		
 		}
@@ -418,7 +418,7 @@ class simulator {
 		// 	tb -> programmer_byte = *reinterpret_cast<unsigned long*>(&dtb_buffer.at(i));
     //   tb -> programmer_offset = (i+0x07e00000UL);
 		// 	//cout << buffer.at(i)&255 << endl;
-		// 	tick(++dump_tick, tb, tfp);	//here it is tick_nodump
+		// 	tick_nodump(++dump_tick, tb, tfp);	//here it is tick_nodump
     //   // if (progress != (i*100)/buffer.size()) 
     //   printf("Kernel Loaded: %ld \%\r", (i*100)/buffer.size());		
 		// }
@@ -434,17 +434,17 @@ class simulator {
 		// 	tb -> programmer_byte = *reinterpret_cast<unsigned long*>(&boot_buffer.at(i));
     //   tb -> programmer_offset = (i+0x07ffff00UL);
 		// 	//cout << buffer.at(i)&255 << endl;
-		// 	tick(++dump_tick, tb, tfp);	//here it is tick_nodump
+		// 	tick_nodump(++dump_tick, tb, tfp);	//here it is tick_nodump
     //   // if (progress != (i*100)/buffer.size()) 
     //   printf("Kernel Loaded: %ld \%\r", (i*100)/buffer.size());		
 		// }
     // printf("done\n");
 		tb ->finishedProgramming = 1;
     tb ->programmer_valid = 0;
-    tick(++dump_tick, tb, tfp);//here it is tick_nodump
+    tick_nodump(++dump_tick, tb, tfp);//here it is tick_nodump
 		tb ->finishedProgramming = 0;
     tb ->programmer_valid = 0;
-    tick(++dump_tick, tb, tfp); //here it is tick_nodump
+    tick_nodump(++dump_tick, tb, tfp); //here it is tick_nodump
     // prev_pc_core0 = 0x80000000UL;
     prev_pc_core0 = 0x10000000UL;
     prev_pc_core1 = 0x10000000UL;
@@ -639,16 +639,16 @@ class simulator {
 
       if (tb ->putChar_valid) { cout << (char)(tb -> putChar_byte) << flush; }
     } */
-    tick(++dump_tick, tb, tfp); //this tick_nodump
+    tick_nodump(++dump_tick, tb, tfp); //this tick_nodump
     #ifndef STEP_TIMEOUT
-    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired)) {
+    while (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired) && !(tb -> robOut2_commitFired) && !(tb -> robOut3_commitFired)) {
     #else
-    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired))&& i < STEP_TIMEOUT; i++) {
+    for (int i = 0; (!(tb -> robOut0_commitFired) && !(tb -> robOut1_commitFired) && !(tb -> robOut2_commitFired) && !(tb -> robOut3_commitFired)) && i < STEP_TIMEOUT; i++) {
     #endif
     #ifdef SHOW_TERMINAL
       //if (tb ->putChar_valid) { cout << tb -> putChar_byte << flush; }
     #endif
-      tick(++dump_tick, tb, tfp); //here it tick_nodump
+      tick_nodump(++dump_tick, tb, tfp); //here it tick_nodump
       //printf("prev_pc_core0: 0x%lx\n", prev_pc_core0);
           }
     
@@ -659,29 +659,136 @@ class simulator {
     //printf("leon prev_pc_core0: 0x%lx\n", prev_pc_core0);
 
     // return 1 indicate timeout
-
-    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+    if(tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
         prev_pc_core0 = tb -> robOut0_pc;
         prev_pc_core1 = tb -> robOut1_pc;
-        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 2; }
-        //printf("leon1 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        //printf("leon1 prev_pc_core1: 0x%lx\n", prev_pc_core1);
-        return 0;
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 1;
+
+    }else if (tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut2_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 2;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut1_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 3;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 4;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut2_commitFired && tb -> robOut3_commitFired){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 5;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut1_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+
+        return 6;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut2_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 7;
+
+    }else if(tb -> robOut0_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core0 = tb -> robOut0_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 8;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut2_commitFired ){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+
+        return 9;
+
+    }else if(tb -> robOut1_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core1 = tb -> robOut1_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 10;
+
+    }else if(tb -> robOut2_commitFired && tb -> robOut3_commitFired ){
+        prev_pc_core2 = tb -> robOut2_pc;
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+
+        return 11;
+
     }else if(tb -> robOut0_commitFired){
         prev_pc_core0 = tb -> robOut0_pc;
-        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 2; }
-        //printf("leon2 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        return 0;
+        if ((tb -> robOut0_interrupt) && (tb -> robOut0_commitFired)) { return 16; }
+        return 12;
+
     }else if(tb -> robOut1_commitFired){
-        prev_pc_core1 = tb -> robOut0_pc;
-        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 2; }
-        //printf("leon3 prev_pc_core0: 0x%lx\n", prev_pc_core0);
-        return 0;
+        prev_pc_core1 = tb -> robOut1_pc;
+        if ((tb -> robOut1_interrupt) && (tb -> robOut1_commitFired)) { return 17; }
+        return 13;
+
+    }else if(tb -> robOut2_commitFired){
+        prev_pc_core2 = tb -> robOut2_pc;
+        if ((tb -> robOut2_interrupt) && (tb -> robOut2_commitFired)) { return 18; }
+        return 14;
+
+    }else if(tb -> robOut3_commitFired){
+        prev_pc_core3 = tb -> robOut3_pc;
+        if ((tb -> robOut3_interrupt) && (tb -> robOut3_commitFired)) { return 19; }
+        return 15;
+
     }else{
-        //printf("TIMEOUT IN SIMULATOR!!!\n");
-        return 1;
+        printf("TIMEOUT IN SIMULATOR!!!\n");
+        return 0;
     }
+
+    
 
 
   }
