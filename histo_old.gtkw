@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Mon May  5 10:04:19 2025
+[*] Sun May  4 19:28:33 2025
 [*]
 [dumpfile] "/home/mewanthakshana/FYP/Simulation/Quard_core/system_trace.vcd.fst"
-[dumpfile_mtime] "Mon May  5 06:23:40 2025"
-[dumpfile_size] 187180977
+[dumpfile_mtime] "Sun May  4 15:07:16 2025"
+[dumpfile_size] 201781795
 [savefile] "/home/mewanthakshana/FYP/Simulation/Quard_core/histo.gtkw"
-[timestart] 9030431
+[timestart] 9030344
 [size] 1920 998
 [pos] -961 -1
-*-4.200000 9030440 9378220 9355720 9355300 1020800 8924520 9029150 9029810 9030230 9030370 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.200000 9030370 9378220 9355720 9355300 1020800 8924520 9029150 9029810 9030230 9030370 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [markername] A2.LW at commit
 [markername] B2.CacheLine to core 2
 [markername] C1.CacheLine send from core 1
@@ -22,10 +22,11 @@
 [treeopen] TOP.
 [treeopen] TOP.system.
 [treeopen] TOP.system.core0.memAccess.
+[treeopen] TOP.system.core1.
 [treeopen] TOP.system.core1.memAccess.
 [treeopen] TOP.system.core1.memAccess.cacheLookup.
+[treeopen] TOP.system.core2.
 [treeopen] TOP.system.core2.memAccess.
-[treeopen] TOP.system.core3.
 [treeopen] TOP.system.core3.memAccess.
 [treeopen] TOP.system.core3.memAccess.aceUnit.
 [treeopen] TOP.system.core3.memAccess.cacheLookup.
@@ -35,8 +36,9 @@
 [sst_vpaned_height] 293
 @28
 TOP.clock
-@800200
+@c00200
 -0.Core
+@800200
 -0.Lookup
 -0.ReadBuf
 @28
@@ -60,28 +62,6 @@ TOP.system.core0.memAccess.cacheLookup.readBuffer_writeData_data[63:0]
 TOP.system.core0.memAccess.cacheLookup.readBuffer_writeData_valid
 @1000200
 -0.ReadBuf
-@c00200
--0.ReplayBuff
-@22
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_address[31:0]
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_branch_mask[4:0]
-@28
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_branch_valid
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_cacheLine_response[1:0]
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_cacheLine_valid
-@22
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_core_instruction[31:0]
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_core_prfDest[5:0]
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_core_robAddr[3:0]
-@28
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_valid
-@22
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_writeData_data[63:0]
-@28
-TOP.system.core0.memAccess.cacheLookup.replayBuffer_writeData_valid
-@1401200
--0.ReplayBuff
-@1000200
 -0.Lookup
 @c00200
 -0.CD_Bus
@@ -93,22 +73,10 @@ TOP.system.core0.memAccess.aceUnit.bus_CDLAST
 TOP.system.core0.memAccess.aceUnit.bus_CDDATA[63:0]
 @1401200
 -0.CD_Bus
-@800200
--0.AR_Bus
-@28
-TOP.system.core0.memAccess.aceUnit.bus_ARREADY
-TOP.system.core0.memAccess.aceUnit.bus_ARVALID
-@22
-TOP.system.core0.memAccess.aceUnit.bus_ARADDR[31:0]
-TOP.system.core0.memAccess.aceUnit.bus_ARSNOOP[3:0]
-@1000200
--0.AR_Bus
 -0.Core
-@c00200
--1.Core
 @800200
+-1.Core
 -1.Lookup
-@c00200
 -1.REadBuffer
 @28
 TOP.system.core1.memAccess.cacheLookup.requestType[1:0]
@@ -130,9 +98,9 @@ TOP.system.core1.memAccess.cacheLookup.readBuffer_cacheLine_valid
 TOP.system.core1.memAccess.cacheLookup.readBuffer_writeData_data[63:0]
 @28
 TOP.system.core1.memAccess.cacheLookup.readBuffer_writeData_valid
-@1401200
+@1000200
 -1.REadBuffer
-@c00200
+@800200
 -1.TagRelatedDataWires
 @28
 TOP.system.core1.memAccess.cacheLookup.isDataMissWire
@@ -141,9 +109,9 @@ TOP.system.core1.memAccess.cacheLookup.isReplayValidWire
 TOP.system.core1.memAccess.cacheLookup.dirtyBitWire
 TOP.system.core1.memAccess.cacheLookup.isDirtyWire
 TOP.system.core1.memAccess.cacheLookup.newDirtyBitWire
-@1401200
+@1000200
 -1.TagRelatedDataWires
-@c00200
+@800200
 -1.TagData
 @22
 TOP.system.core1.memAccess.cacheLookup.tagBRAM_rdAddr[6:0]
@@ -155,7 +123,7 @@ TOP.system.core1.memAccess.cacheLookup.newtagChunks_1[22:0]
 TOP.system.core1.memAccess.cacheLookup.tagBRAM_wrEna
 @22
 TOP.system.core1.memAccess.cacheLookup.tagBRAM_wrAddr[6:0]
-@1401200
+@1000200
 -1.TagData
 @22
 TOP.system.core1.memAccess.cacheLookup.newWriteChunks_12[31:0]
@@ -174,7 +142,7 @@ TOP.system.core1.memAccess.cacheLookup.dataBRAM_0_rdData[511:0]
 TOP.system.core1.memAccess.cacheLookup.dataBRAM_0_wrData[511:0]
 @1401200
 -1.DataBRAM
-@c00200
+@800200
 -1.CoherencyRespBuffer
 @28
 TOP.system.core1.memAccess.cacheLookup.coherencyResponseBuffer_valid
@@ -183,13 +151,11 @@ TOP.system.core1.memAccess.cacheLookup.coherencyResponseBuffer_response[1:0]
 TOP.system.core1.memAccess.cacheLookup.coherencyResponseBuffer_cacheLine[511:0]
 @28
 TOP.system.core1.memAccess.cacheLookup.coherencyResponseBuffer_dataValid
-@1401200
--1.CoherencyRespBuffer
 @1000200
+-1.CoherencyRespBuffer
 -1.Lookup
 @800200
 -1.ACEUnit
-@c00200
 -1.AR_Bus
 @28
 TOP.system.core1.memAccess.aceUnit.bus_ARREADY
@@ -197,9 +163,9 @@ TOP.system.core1.memAccess.aceUnit.bus_ARVALID
 @22
 TOP.system.core1.memAccess.aceUnit.bus_ARADDR[31:0]
 TOP.system.core1.memAccess.aceUnit.bus_ARSNOOP[3:0]
-@1401200
+@1000200
 -1.AR_Bus
-@c00200
+@800200
 -1.R_Bus
 @28
 TOP.system.core1.memAccess.aceUnit.bus_RREADY
@@ -208,9 +174,9 @@ TOP.system.core1.memAccess.aceUnit.bus_RLAST
 @22
 TOP.system.core1.memAccess.aceUnit.bus_RDATA[63:0]
 TOP.system.core1.memAccess.aceUnit.bus_RRESP[3:0]
-@1401200
+@1000200
 -1.R_Bus
-@800200
+@c00200
 -1.AC_Bus
 @28
 TOP.system.core1.memAccess.aceUnit.bus_ACREADY
@@ -218,7 +184,7 @@ TOP.system.core1.memAccess.aceUnit.bus_ACVALID
 @22
 TOP.system.core1.memAccess.aceUnit.bus_ACADDR[31:0]
 TOP.system.core1.memAccess.aceUnit.bus_ACSNOOP[3:0]
-@1000200
+@1401200
 -1.AC_Bus
 @28
 TOP.system.core1.memAccess.aceUnit.coherentAXIState[2:0]
@@ -263,10 +229,10 @@ TOP.system.core1.memAccess.aceUnit.bus_CDDATA[63:0]
 -1.CD_Vus
 @1000200
 -1.ACEUnit
-@1401200
 -1.Core
-@c00200
+@800200
 -2.Core
+@c00200
 -2.ROB
 @28
 TOP.system.core2.rob.commit_ready
@@ -292,14 +258,15 @@ TOP.system.core2.memAccess.requestScheduler.requestIn_branch_mask[4:0]
 @1401200
 -2.ReqIn
 -2.ReqSch
-@c00200
+@800200
 -2.Lookup
 @28
 TOP.system.core2.memAccess.cacheLookup.writeCacheLineUpdate
 TOP.system.core2.memAccess.cacheLookup.readCacheLineUpdate
 TOP.system.core2.memAccess.cacheLookup.hitTagWire[1:0]
-@22
+@23
 TOP.system.core2.memAccess.cacheLookup.newtagChunks_0[22:0]
+@22
 TOP.system.core2.memAccess.cacheLookup.tagChunks_0[22:0]
 @28
 TOP.system.core2.memAccess.cacheLookup.dataBRAM_0_wrEna
@@ -374,7 +341,6 @@ TOP.system.core2.memAccess.cacheLookup.coherencyResponseBuffer_response[1:0]
 TOP.system.core2.memAccess.cacheLookup.coherencyResponseBuffer_dataValid
 @1000200
 -2.CohrencyBuffer
-@1401200
 -2.Lookup
 @800200
 -2.ACEUnit
@@ -422,7 +388,7 @@ TOP.system.core2.memAccess.aceUnit.bus_RDATA[63:0]
 TOP.system.core2.memAccess.aceUnit.bus_RRESP[3:0]
 @1401200
 -2.R_Bus
-@800200
+@c00200
 -2.AC_Busd
 @28
 TOP.system.core2.memAccess.aceUnit.bus_ACREADY
@@ -430,7 +396,7 @@ TOP.system.core2.memAccess.aceUnit.bus_ACVALID
 @22
 TOP.system.core2.memAccess.aceUnit.bus_ACADDR[31:0]
 TOP.system.core2.memAccess.aceUnit.bus_ACSNOOP[3:0]
-@1000200
+@1401200
 -2.AC_Busd
 @c00200
 -2.CohrencyRespBuffer
@@ -475,30 +441,7 @@ TOP.system.core2.memAccess.responseOut_robAddr[3:0]
 TOP.system.core2.memAccess.responseOut_result[63:0]
 @1000200
 -2.RespOut
-@1401200
 -2.Core
-@c00201
--3.Core
-@800200
--3.AC_Bus
-@28
-TOP.system.core3.memAccess.aceUnit.bus_ACREADY
-TOP.system.core3.memAccess.aceUnit.bus_ACVALID
-@22
-TOP.system.core3.memAccess.aceUnit.bus_ACADDR[31:0]
-TOP.system.core3.memAccess.aceUnit.bus_ACSNOOP[3:0]
-@1000200
--3.AC_Bus
-@800200
--3.CR_Bus
-@28
-TOP.system.core3.memAccess.aceUnit.bus_CRREADY
-@22
-TOP.system.core3.memAccess.aceUnit.bus_CRRESP[4:0]
-@28
-TOP.system.core3.memAccess.aceUnit.bus_CRVALID
-@1000200
--3.CR_Bus
 @c00200
 -3.CD_Bus
 @28
@@ -509,7 +452,5 @@ TOP.system.core3.memAccess.aceUnit.bus_CDLAST
 TOP.system.core3.memAccess.aceUnit.bus_CDDATA[63:0]
 @1401200
 -3.CD_Bus
-@1401201
--3.Core
 [pattern_trace] 1
 [pattern_trace] 0

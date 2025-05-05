@@ -134,6 +134,7 @@ sim: .stamp.sim
 		echo "histo: test fail" >> test_results.txt; \
 	fi; \
 
+# VERILATOR_INCLUDE = /usr/share/verilator/include
 VERILATOR_INCLUDE = /usr/share/verilator/share/verilator/include
 
 .stamp.runLockStep: .stamp.lock_step_run.out fyp18-riscv-emulator/src/Image

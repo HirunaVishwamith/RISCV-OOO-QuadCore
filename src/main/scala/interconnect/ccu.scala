@@ -1625,7 +1625,11 @@ class ccu extends Module {
 			}.otherwise{
 				core7.CDREADY := false.B
 			}
-			L2.RREADY := true.B
+			when((tran_pbuf_3 === "b1011".U(4.W))){
+				L2.RREADY := false.B
+			}.otherwise{
+				L2.RREADY := true.B
+			}
 		}
 		is(5.U){//RSP
 
