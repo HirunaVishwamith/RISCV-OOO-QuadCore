@@ -13,3 +13,4 @@ csaxpy: test pass
 Time : May  5 2025 19:06:51
 Program cycles: 565778
 histo: test pass
+Program cycles: 6869
