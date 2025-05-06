@@ -16,3 +16,4 @@ Image1
 *.fst
 firrtl_black_box_resource_files.f
 Makefile
+benchmark/*

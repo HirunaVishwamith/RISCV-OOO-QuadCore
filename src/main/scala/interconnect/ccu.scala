@@ -1535,7 +1535,7 @@ class ccu extends Module {
 			}
 		}
 		is(2.U){//SYNC wait untill all the data available channels asserted its valid signal
-			when((!crpbuf_3_0(0) || core0.CDVALID) && (!crpbuf_3_1(0) || core1.CDVALID) && (!crpbuf_3_2(0) || core2.CDVALID) && (!crpbuf_3_3(0) || core3.CDVALID) && (!crpbuf_3_4(0) || core4.CDVALID) && (!crpbuf_3_5(0) || core5.CDVALID) && (!crpbuf_3_6(0) || core6.CDVALID) && (!crpbuf_3_7(0) || core7.CDVALID) && L2.RVALID){
+			when((!crpbuf_3_0(0) || core0.CDVALID) && (!crpbuf_3_1(0) || core1.CDVALID) && (!crpbuf_3_2(0) || core2.CDVALID) && (!crpbuf_3_3(0) || core3.CDVALID) && (!crpbuf_3_4(0) || core4.CDVALID) && (!crpbuf_3_5(0) || core5.CDVALID) && (!crpbuf_3_6(0) || core6.CDVALID) && (!crpbuf_3_7(0) || core7.CDVALID) && (L2.RVALID || (tran_pbuf_3 === "b1011".U(4.W)))){
 				stateReg_12 := 3.U
 			}.otherwise{
 				stateReg_12 := 2.U

@@ -1,16 +1,4 @@
-Time : May  5 2025 18:52:05
+Time : May  7 2025 00:16:11
 Program cycles: 6869
 vvadd: test pass
-Time : May  5 2025 18:53:04
-Program cycles: 185725
-matmul: test pass
-Time : May  5 2025 18:54:06
-Program cycles: 84988
-filter: test pass
-Time : May  5 2025 18:56:06
-Program cycles: 62711
-csaxpy: test pass
-Time : May  5 2025 19:06:51
-Program cycles: 565778
-histo: test pass
-Program cycles: 6869
+Time : May  7 2025 00:19:27
