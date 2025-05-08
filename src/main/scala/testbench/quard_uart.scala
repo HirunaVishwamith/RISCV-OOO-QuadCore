@@ -93,6 +93,7 @@ class uartPort extends Module {
     is("h02000008".U) { client.RDATA := msipRead } // check this only core 2 should access this adress
     is("h0200000C".U) { client.RDATA := msipRead } // check this only core 3 should access this adress
     is("h04000000".U) { client.RDATA := ps_stat }
+    is("h040600008".U){client.RDATA := 4096.U}
   }
   client.RID := readRequestBuffer.id
   client.RLAST := !readRequestBuffer.len.orR

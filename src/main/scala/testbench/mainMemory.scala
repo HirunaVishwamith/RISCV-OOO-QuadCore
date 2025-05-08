@@ -127,7 +127,7 @@ class mainMemory(
 
   // writing to memory
   when(writeBuffers.addressValid && writeBuffers.dataValid) {
-    Seq.tabulate(32)(i => (i, (writeBuffers.data >> (i*8))(7, 0), writeBuffers.dataMask(i))) //leon
+    Seq.tabulate(32)(i => (i, (writeBuffers.data >> (i*8))(7, 0), true.B)) //leon
     .foreach{ case(offset, data, maskBit) => when(maskBit.asBool) { memory.write(writeBuffers.address + offset.U, data) } }
 
     writeBuffers.address := writeBuffers.address + 32.U //leon changed

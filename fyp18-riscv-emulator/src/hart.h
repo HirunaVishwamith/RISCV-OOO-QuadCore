@@ -93,7 +93,7 @@ private:
   bool INS_ACC_FAULT = false; // instruction access fault
   bool LD_ACC_FAULT = false;  // load access fault
 
-  uint64_t DRAM_BASE = 0x10000000; /// **** this has to change inorder to write to seperate memory location
+  uint64_t DRAM_BASE = 0x80000000; /// **** this has to change inorder to write to seperate memory location
 
   string line;
   uint64_t temp;

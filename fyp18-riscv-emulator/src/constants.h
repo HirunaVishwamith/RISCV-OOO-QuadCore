@@ -26,8 +26,8 @@
 #define CAUSE_FETCH_ACCESS          0x1
 #define CAUSE_LOAD_ACCESS           0x5
 
-#define FIFO_ADDR_TX 0xe0001030
-#define FIFO_ADDR_RX 0xe000102c
+#define FIFO_ADDR_TX 0x40600004
+#define FIFO_ADDR_RX 0x40600000
 
 #define CLINT_BASE 0x2000000
 #define CLINT_SIZE 0x00c0000

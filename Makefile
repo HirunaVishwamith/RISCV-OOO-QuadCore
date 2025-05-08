@@ -1,22 +1,43 @@
 VPATH = ../scala:../cache:../common:../decode:../exec:../fetch:./memAccess:../rob:../testbench
 
+# VADD_BINS := 1000 2000 5000 7000 10000
+VADD_BINS := 1 2 3 4 5
+
+# MATMUL_BINS := 32 64 128 256 512
+MATMUL_BINS := 1 2 #3 4 5
+
+# FILTER_BINS := 64 128 256 512 1024
+FILTER_BINS := 1 2 #3 4 5
+
+# CSAXPY_BINS := 1000 2000 5000 7000 10000
+CSAXPY_BINS := 1 2 3 4 5
+
+# HISTO_BINS := 10000 20000 50000 70000 100000
+HISTO_BINS := 1 2 3 4 5
+
 .PHONY: vvadd
-vvadd: .stamp.vvadd
+vvadd: $(patsubst %, .stamp.vvadd_%, $(VADD_BINS))
 
 .PHONY: matmul
-matmul: .stamp.matmul
+matmul: $(patsubst %, .stamp.matmul_%, $(MATMUL_BINS))
 
 .PHONY: filter
-filter: .stamp.filter
+filter: $(patsubst %, .stamp.filter_%, $(FILTER_BINS))
 
 .PHONY: csaxpy
-csaxpy: .stamp.csaxpy
+csaxpy: $(patsubst %, .stamp.csaxpy_%, $(CSAXPY_BINS))
 
 .PHONY: histo
-histo: .stamp.histo
+histo: $(patsubst %, .stamp.histo_%, $(HISTO_BINS))
 
 .PHONY: linux
 linux: .stamp.linux
+
+.PHONY: demo
+demo: .stamp.demo
+
+.PHONY: fire
+fire: .stamp.fire
 
 .PHONY: test_all_images
 test_all_images: .stamp.test_all_images
@@ -30,44 +51,91 @@ runLockStep: .stamp.runLockStep
 .PHONY: sim
 sim: .stamp.sim
 
-.stamp.vvadd: .stamp.vvadd .stamp.sim
+.stamp.vvadd_%: .stamp.sim
 	cp lock_step_files/lock_step_run_vvadd.cpp lock_step_run.cpp
-	cp benchmark/mt-vvadd.bin fyp18-riscv-emulator/src/Image 
-	$(MAKE) runLockStep; 
-	touch .stamp.vvadd
+	cp benchmark/mt-vvadd-s$*.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "vvadd-s$*: test pass" >> test_results.txt; \
+	else \
+		echo "vvadd-s$*: test fail" >> test_results.txt; \
+	fi;
+	@touch $@
 
-.stamp.matmul: .stamp.matmul .stamp.sim
+
+.stamp.matmul_%: .stamp.sim
 	cp lock_step_files/lock_step_run_matmul.cpp lock_step_run.cpp
-	cp benchmark/mt-matmul.bin fyp18-riscv-emulator/src/Image 
-	$(MAKE) runLockStep; 
-	touch .stamp.matmul
+	cp benchmark/mt-matmul-s$*.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "matmul-s$*: test pass" >> test_results.txt; \
+	else \
+		echo "matmul-s$*: test fail" >> test_results.txt; \
+	fi;
+	@touch $@
 
-.stamp.filter: .stamp.filter .stamp.sim
+
+.stamp.filter_%: .stamp.sim
 	cp lock_step_files/lock_step_run_filter.cpp lock_step_run.cpp
-	cp benchmark/mt-mask-sfilter.bin fyp18-riscv-emulator/src/Image 
-	$(MAKE) runLockStep; 
-	touch .stamp.filter
+	cp benchmark/mt-mask-sfilter-s$*.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "filter-s$*: test pass" >> test_results.txt; \
+	else \
+		echo "filter-s$*: test fail" >> test_results.txt; \
+	fi;
+	@touch $@
 
-.stamp.csaxpy: .stamp.csaxpy .stamp.sim
+
+.stamp.csaxpy_%: .stamp.sim
 	cp lock_step_files/lock_step_run_csaxpy.cpp lock_step_run.cpp
-	cp benchmark/mt-csaxpy.bin fyp18-riscv-emulator/src/Image 
-	$(MAKE) runLockStep; 
-	touch .stamp.csaxpy
+	cp benchmark/mt-csaxpy-s$*.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "csaxpy-s$*: test pass" >> test_results.txt; \
+	else \
+		echo "csaxpy-s$*: test fail" >> test_results.txt; \
+	fi;
+	@touch $@
 
-.stamp.histo: .stamp.histo .stamp.sim
+.stamp.histo_%: .stamp.sim
 	cp lock_step_files/lock_step_run_histo.cpp lock_step_run.cpp
-	cp benchmark/mt-histo.bin fyp18-riscv-emulator/src/Image 
-	$(MAKE) runLockStep; 
-	touch .stamp.histo
+	cp benchmark/mt-histo-s$*.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	if [ $$STATUS -eq 0 ]; then \
+		echo "histo-s$*: test pass" >> test_results.txt; \
+	else \
+		echo "histo-s$*: test fail" >> test_results.txt; \
+	fi;
+	@touch $@
 
 .stamp.linux: .stamp.linux .stamp.sim
 	cp lock_step_files/lock_step_run.cpp lock_step_run.cpp
 	cp Image fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep;
+	@touch .stamp.linux
+
+.stamp.demo: .stamp.demo .stamp.sim
+	cp lock_step_files/lock_step_run.cpp lock_step_run.cpp
+	cp benchmark/mt-image.bin fyp18-riscv-emulator/src/Image
 	$(MAKE) runLockStep; \
 	STATUS=$$?; \
-	$(MAKE) python_decode;
-	touch .stamp.linux 
-	
+	$(MAKE) python_decode; \
+	@touch .stamp.demo 
+
+.stamp.fire: .stamp.fire .stamp.sim
+	cp lock_step_files/lock_step_run.cpp lock_step_run.cpp
+	cp benchmark/mt-fire.bin fyp18-riscv-emulator/src/Image
+	$(MAKE) runLockStep; \
+	STATUS=$$?; \
+	$(MAKE) python_decode; \
+	@touch .stamp.fire 
+
 .stamp.test_all_images: .stamp.sim
 	cp lock_step_files/lock_step_run_test.cpp lock_step_run.cpp
 	@rm -f test_results.txt
@@ -83,58 +151,29 @@ sim: .stamp.sim
 		fi; \
 		rm fyp18-riscv-emulator/src/Image; \
 	done
-	touch .stamp.test_all_images
+	@touch .stamp.test_all_images
 
 .stamp.bulk_test : .stamp.sim
 	@rm -f test_results.txt
 # 	$(MAKE) test_all_images;
 
-	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
 	$(MAKE) vvadd; \
-	STATUS=$$?; \
-	if [ $$STATUS -eq 0 ]; then \
-		echo "vvadd: test pass" >> test_results.txt; \
-	else \
-		echo "vvadd: test fail" >> test_results.txt; \
-	fi; \
 
-	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
 	$(MAKE) matmul; \
-	STATUS=$$?; \
-	if [ $$STATUS -eq 0 ]; then \
-		echo "matmul: test pass" >> test_results.txt; \
-	else \
-		echo "matmul: test fail" >> test_results.txt; \
-	fi; \
 
-	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
 	$(MAKE) filter; \
-	STATUS=$$?; \
-	if [ $$STATUS -eq 0 ]; then \
-		echo "filter: test pass" >> test_results.txt; \
-	else \
-		echo "filter: test fail" >> test_results.txt; \
-	fi; \
 
-	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
 	$(MAKE) csaxpy; \
-	STATUS=$$?; \
-	if [ $$STATUS -eq 0 ]; then \
-		echo "csaxpy: test pass" >> test_results.txt; \
-	else \
-		echo "csaxpy: test fail" >> test_results.txt; \
-	fi; \
 
-	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt 
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
 	$(MAKE) histo; \
-	STATUS=$$?; \
-	if [ $$STATUS -eq 0 ]; then \
-		echo "histo: test pass" >> test_results.txt; \
-	else \
-		echo "histo: test fail" >> test_results.txt; \
-	fi; \
 
-# VERILATOR_INCLUDE = /usr/share/verilator/include
+	@date +"Time : %b %_d %Y %H:%M:%S" >> test_results.txt
+
 VERILATOR_INCLUDE = /usr/share/verilator/share/verilator/include
 
 .stamp.runLockStep: .stamp.lock_step_run.out fyp18-riscv-emulator/src/Image
@@ -144,7 +183,7 @@ VERILATOR_INCLUDE = /usr/share/verilator/share/verilator/include
 	g++ -O3 -I $(VERILATOR_INCLUDE) -I simulator/src/obj_dir \
 		$(VERILATOR_INCLUDE)/verilated.cpp $(VERILATOR_INCLUDE)/verilated_vcd_c.cpp \
 		lock_step_run.cpp simulator/src/obj_dir/Vsystem__ALL.a -o lock_step_run.out
-		touch .stamp.lock_step_run.out
+		@touch .stamp.lock_step_run.out
 
 simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheRegisters.v
 	cd simulator/src/; \
@@ -162,7 +201,7 @@ simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheReg
 .stamp.sim:$(shell find src/main/scala/ -type f -name '*.scala')
 	# Change instructionBase in configuration file
 	mv src/main/scala/common/configuration.scala configuration.txt
-	sed 's/instructionBase/instructionBase = 0x0000000010000000L\/\//' configuration.txt > src/main/scala/common/configuration.scala
+	sed 's/instructionBase/instructionBase = 0x0000000080000000L\/\//' configuration.txt > src/main/scala/common/configuration.scala
 	# sbt "clean; compile; runMain system"
 	sbt "runMain system"
 	# Restoring the original configuration
@@ -180,7 +219,7 @@ simulator/src/obj_dir: .stamp.sim simulator/src/system.v simulator/src/iCacheReg
 	verilator -Wall --trace -cc system.v; \
 	cd obj_dir/; \
 	make -f Vsystem.mk;
-	touch .stamp.sim
+	@touch .stamp.sim
 
 simulator/src/bench.out: simulator/src/obj_dir simulator/src/simulator.h simulator/src/bench.cpp
 	cd simulator/src; \
@@ -218,6 +257,7 @@ fix_inotify_instances_reached:
 	# java.io.IOException: User limit of inotify instances reached or too many open files
 	echo 512 | sudo tee /proc/sys/fs/inotify/max_user_instances
 
+
 python_decode:
 	if [ $$STATUS -eq 0 ]; then \
 		echo "$$No errors yet"; \
@@ -225,8 +265,6 @@ python_decode:
     	. ~/.venv/bin/activate; \
       	python decoder.py run_core0.log -o run_core0-decoded.log; \
       	python decoder.py run_core1.log -o run_core1-decoded.log; \
-		python decoder.py run_core2.log -o run_core2-decoded.log; \
-      	python decoder.py run_core3.log -o run_core3-decoded.log; \
       	deactivate;\
 	fi; \
 

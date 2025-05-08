@@ -654,7 +654,7 @@ int main(int argc, char* argv[]) {
     }
     // Check for test completion
     //VVADD
-    if (bench.prev_pc_core0 == 0x1000089c) {
+    if ((bench.prev_pc_core0 == 0x800009a4 && bench.get_register_value_core0(10) == 0) || (bench.prev_pc_core0 == 0x80000998 && bench.get_register_value_core0(10) == 0)) {
       printf("Test complete \n");
       FILE *file = fopen("test_results.txt", "a");
       printf("Program cycles: %d\n",prog_count);
