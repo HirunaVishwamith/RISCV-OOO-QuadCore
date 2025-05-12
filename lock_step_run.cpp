@@ -643,10 +643,10 @@ int main(int argc, char* argv[]) {
 
     //Performance check
     //thread_entry
-    if (bench.prev_pc_core0 == 0x100002dc) {
+    if (bench.prev_pc_core0 == 0x800002dc) {
       prog_count_true = true;
     //barrier
-    } else if (bench.prev_pc_core0 == 0x1000025c) {
+    } else if (bench.prev_pc_core0 == 0x8000025c) {
       prog_count_true = false;
     }
     if (prog_count_true) {

@@ -106,3 +106,9 @@ class l2_mem(arlen:Int=7 ,addr_w: Int = 3,idWidth: Int = 3, addressWidth: Int = 
 
 }
 
+object L2Main extends App {
+  println("Generating the CacheModule hardware")
+  //Hardware files will be out into generated
+  emitVerilog(new l2_mem, Array("--target-dir", "generated"))
+}
+
