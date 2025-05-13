@@ -782,14 +782,14 @@ class ccu extends Module {
 
 
 	val stateReg_3 = RegInit(0.U(3.W))
-    val stateReg_4 = RegInit(0.U(3.W))
-    val stateReg_5 = RegInit(0.U(3.W))
-    val stateReg_6 = RegInit(0.U(3.W))
-    val stateReg_7 = RegInit(0.U(3.W))
-    val stateReg_8 = RegInit(0.U(3.W))
-    val stateReg_9 = RegInit(0.U(3.W))
-    val stateReg_10 = RegInit(0.U(3.W))
-    val stateReg_11 = RegInit(0.U(3.W))
+    val stateReg_4 = RegInit(0.U(4.W))
+    val stateReg_5 = RegInit(0.U(4.W))
+    val stateReg_6 = RegInit(0.U(4.W))
+    val stateReg_7 = RegInit(0.U(4.W))
+    val stateReg_8 = RegInit(0.U(4.W))
+    val stateReg_9 = RegInit(0.U(4.W))
+    val stateReg_10 = RegInit(0.U(4.W))
+    val stateReg_11 = RegInit(0.U(4.W))
     val stateReg_12 = RegInit(0.U(3.W))
 
 
@@ -825,7 +825,7 @@ class ccu extends Module {
 			stateReg_3 := 4.U
 		}
 		is(4.U){//SYNC
-			when(stateReg_4 === "b000".U(3.W) && stateReg_5 === "b000".U(3.W) && stateReg_6 === "b000".U(3.W) && stateReg_7 === "b000".U(3.W) && stateReg_8 === "b000".U(3.W) && stateReg_9 === "b000".U(3.W) && stateReg_10 === "b000".U(3.W) && stateReg_11 === "b000".U(3.W)){
+			when(stateReg_4 === "b0000".U(4.W) && stateReg_5 === "b0000".U(4.W) && stateReg_6 === "b0000".U(4.W) && stateReg_7 === "b0000".U(4.W) && stateReg_8 === "b0000".U(4.W) && stateReg_9 === "b0000".U(4.W) && stateReg_10 === "b0000".U(4.W) && stateReg_11 === "b0000".U(4.W)){
 				stateReg_3 := 5.U
 			}.otherwise{
 				stateReg_3 := 4.U
@@ -855,6 +855,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_4 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_4 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b000".U(3.W))){
 				stateReg_4 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b000".U(3.W))){
@@ -896,7 +898,7 @@ class ccu extends Module {
 			stateReg_4 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W)) ){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W)) ){
 				stateReg_4 := 5.U
 			}.otherwise{
 				stateReg_4 := 4.U
@@ -912,12 +914,23 @@ class ccu extends Module {
 		is(6.U){//BUF
 			core_id_pbuf_3 := core_id_pbuf_2	//This is done only in FSM_4
 			tran_pbuf_3 := tran_pbuf_2			//This is done only in FSM_4
-			addr_pbuf_3 := addr_pbuf_2
+			addr_pbuf_3 := addr_pbuf_2			//This is done only in FSM_4
 			crpbuf_3_0 := crpbuf_2_0
 			stateReg_4 := 7.U
 		}
 		is(7.U){//RSP
 			stateReg_4 := 0.U
+		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b000".U(3.W)){
+					stateReg_4 := 4.U
+				}.otherwise{
+					stateReg_4 := 1.U
+				}
+			}.otherwise{
+				stateReg_4 := 8.U
+			}
 		}
 	}
 
@@ -933,6 +946,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_5 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_5 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b001".U(3.W))){
 				stateReg_5 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b001".U(3.W))){
@@ -975,7 +990,7 @@ class ccu extends Module {
 			stateReg_5 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W)) ){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W)) ){
 				stateReg_5 := 5.U
 			}.otherwise{
 				stateReg_5 := 4.U
@@ -995,6 +1010,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_5 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b001".U(3.W)){
+					stateReg_5 := 4.U
+				}.otherwise{
+					stateReg_5 := 1.U
+				}
+			}.otherwise{
+				stateReg_5 := 8.U
+			}
+		}
 	}
 
 	//FSM_6
@@ -1008,6 +1034,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_6 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_6 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b010".U(3.W))){
 				stateReg_6 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b010".U(3.W))){
@@ -1049,7 +1077,7 @@ class ccu extends Module {
 			stateReg_6 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_6 := 5.U
 			}.otherwise{
 				stateReg_6 := 4.U
@@ -1069,6 +1097,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_6 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b010".U(3.W)){
+					stateReg_6 := 4.U
+				}.otherwise{
+					stateReg_6 := 1.U
+				}
+			}.otherwise{
+				stateReg_6 := 8.U
+			}
+		}
 	}
 
 
@@ -1083,6 +1122,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_7 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_7 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b011".U(3.W))){
 				stateReg_7 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b011".U(3.W))){
@@ -1124,7 +1165,7 @@ class ccu extends Module {
 			stateReg_7 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_7 := 5.U
 			}.otherwise{
 				stateReg_7 := 4.U
@@ -1144,6 +1185,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_7 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b011".U(3.W)){
+					stateReg_7 := 4.U
+				}.otherwise{
+					stateReg_7 := 1.U
+				}
+			}.otherwise{
+				stateReg_7 := 8.U
+			}
+		}
 	}
 
 	//FSM_8
@@ -1157,6 +1209,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_8 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_8 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b100".U(3.W))){
 				stateReg_8 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b100".U(3.W))){
@@ -1198,7 +1252,7 @@ class ccu extends Module {
 			stateReg_8 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_8 := 5.U
 			}.otherwise{
 				stateReg_8 := 4.U
@@ -1218,6 +1272,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_8 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b100".U(3.W)){
+					stateReg_8 := 4.U
+				}.otherwise{
+					stateReg_8 := 1.U
+				}
+			}.otherwise{
+				stateReg_8 := 8.U
+			}
+		}
 	}
 
 	//FSM_9
@@ -1231,6 +1296,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_9 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_9 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b101".U(3.W))){
 				stateReg_9 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b101".U(3.W))){
@@ -1272,7 +1339,7 @@ class ccu extends Module {
 			stateReg_9 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_9 := 5.U
 			}.otherwise{
 				stateReg_9 := 4.U
@@ -1292,6 +1359,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_9 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b101".U(3.W)){
+					stateReg_9 := 4.U
+				}.otherwise{
+					stateReg_9 := 1.U
+				}
+			}.otherwise{
+				stateReg_9 := 8.U
+			}
+		}
 	}
 
 	//FSM_10
@@ -1305,6 +1383,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_10 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_10 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b110".U(3.W))){
 				stateReg_10 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b110".U(3.W))){
@@ -1346,7 +1426,7 @@ class ccu extends Module {
 			stateReg_10 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_10 := 5.U
 			}.otherwise{
 				stateReg_10 := 4.U
@@ -1366,6 +1446,17 @@ class ccu extends Module {
 		is(7.U){//RSP
 			stateReg_10 := 0.U
 		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b110".U(3.W)){
+					stateReg_10 := 4.U
+				}.otherwise{
+					stateReg_10 := 1.U
+				}
+			}.otherwise{
+				stateReg_10 := 8.U
+			}
+		}
 	}
 
 	//FSM_11
@@ -1379,6 +1470,8 @@ class ccu extends Module {
 		is(0.U){//IDLE
 			when((stateReg_3 === "b110".U(3.W)) && ((tran_pbuf_2 === "b0100".U(4.W)) || (tran_pbuf_2 === "b0000".U(4.W)))){
 				stateReg_11 := 4.U
+			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (addr_pbuf_3 === addr_pbuf_2)){
+				stateReg_11 := 8.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && (core_id_pbuf_2 === "b111".U(3.W))){
 				stateReg_11 := 4.U
 			}.elsewhen((stateReg_3 === "b110".U(3.W)) && !(core_id_pbuf_2 === "b111".U(3.W))){
@@ -1420,7 +1513,7 @@ class ccu extends Module {
 			stateReg_11 := 4.U
 		}
 		is(4.U){//FINISH after this state all 4 controllers synchronized
-			when((stateReg_4 === "b100".U(3.W)) && (stateReg_5 === "b100".U(3.W)) && (stateReg_6 === "b100".U(3.W)) && (stateReg_7 === "b100".U(3.W)) && (stateReg_8 === "b100".U(3.W)) && (stateReg_9 === "b100".U(3.W)) && (stateReg_10 === "b100".U(3.W)) && (stateReg_11 === "b100".U(3.W))){
+			when((stateReg_4 === "b0100".U(4.W)) && (stateReg_5 === "b0100".U(4.W)) && (stateReg_6 === "b0100".U(4.W)) && (stateReg_7 === "b0100".U(4.W)) && (stateReg_8 === "b0100".U(4.W)) && (stateReg_9 === "b0100".U(4.W)) && (stateReg_10 === "b0100".U(4.W)) && (stateReg_11 === "b0100".U(4.W))){
 				stateReg_11 := 5.U
 			}.otherwise{
 				stateReg_11 := 4.U
@@ -1439,6 +1532,17 @@ class ccu extends Module {
 		}
 		is(7.U){//RSP
 			stateReg_11 := 0.U
+		}
+		is(8.U){
+			when(stateReg_12 === "b000".U(3.W)){
+				when(core_id_pbuf_2 === "b111".U(3.W)){
+					stateReg_11 := 4.U
+				}.otherwise{
+					stateReg_11 := 1.U
+				}
+			}.otherwise{
+				stateReg_11 := 8.U
+			}
 		}
 	}
 
@@ -1497,11 +1601,11 @@ class ccu extends Module {
 	core7.RRESP := rsp_buff
 	switch(stateReg_12){
 		is(0.U){//IDLE
-			when(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0001".U(4.W)) || (tran_pbuf_3 === "b0111".U(4.W)) || (tran_pbuf_3 === "b0000".U(4.W)))){
+			when(stateReg_4 === "b0111".U(4.W) && ((tran_pbuf_3 === "b0001".U(4.W)) || (tran_pbuf_3 === "b0111".U(4.W)) || (tran_pbuf_3 === "b0000".U(4.W)))){
 				stateReg_12 := 1.U
-			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b0100".U(4.W)))){
+			}.elsewhen(stateReg_4 === "b0111".U(4.W) && ((tran_pbuf_3 === "b0100".U(4.W)))){
 				stateReg_12 := 6.U
-			}.elsewhen(stateReg_4 === "b111".U(3.W) && ((tran_pbuf_3 === "b1011".U(4.W)))){
+			}.elsewhen(stateReg_4 === "b0111".U(4.W) && ((tran_pbuf_3 === "b1011".U(4.W)))){
 				when(crpbuf_3_0(0) || crpbuf_3_1(0)  || crpbuf_3_2(0) ||  crpbuf_3_3(0) || crpbuf_3_4(0) || crpbuf_3_5(0) || crpbuf_3_6(0) || crpbuf_3_7(0)){
 					stateReg_12 := 1.U
 				}.otherwise{

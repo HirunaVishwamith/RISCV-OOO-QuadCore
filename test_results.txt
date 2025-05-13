@@ -1,44 +1,44 @@
-Time : May 11 2025 14:49:59
-Program cycles: 0
+Time : May 13 2025 18:41:39
+Program cycles: 7188
 vvadd-s1: test pass
-Program cycles: 0
+Program cycles: 13765
 vvadd-s2: test pass
-Program cycles: 0
+Program cycles: 35386
 vvadd-s3: test pass
-Program cycles: 0
+Program cycles: 49870
 vvadd-s4: test pass
-Program cycles: 70644
+Program cycles: 70670
 vvadd-s5: test pass
-Time : May 11 2025 15:16:31
-Program cycles: 182337
+Time : May 13 2025 18:57:32
+Program cycles: 186127
 matmul-s1: test pass
-Program cycles: 1475222
+Program cycles: 1465295
 matmul-s2: test pass
-Time : May 11 2025 15:23:28
-Program cycles: 84989
+Time : May 13 2025 19:04:44
+Program cycles: 85754
 filter-s1: test pass
-Program cycles: 351796
+Program cycles: 354098
 filter-s2: test pass
-Time : May 11 2025 15:33:47
-Program cycles: 6655
+Time : May 13 2025 19:15:36
+Program cycles: 6681
 csaxpy-s1: test pass
-Program cycles: 12844
+Program cycles: 12940
 csaxpy-s2: test pass
-Program cycles: 31690
+Program cycles: 32131
 csaxpy-s3: test pass
-Program cycles: 45100
+Program cycles: 45475
 csaxpy-s4: test pass
-Program cycles: 63363
+Program cycles: 62762
 csaxpy-s5: test pass
-Time : May 11 2025 16:00:41
-Program cycles: 81210
+Time : May 13 2025 19:44:11
+Program cycles: 81487
 histo-s1: test pass
-Program cycles: 132960
+Program cycles: 136859
 histo-s2: test pass
-Program cycles: 290329
+Program cycles: 290340
 histo-s3: test pass
-Program cycles: 401457
+Program cycles: 400475
 histo-s4: test pass
-Program cycles: 566194
+Program cycles: 565802
 histo-s5: test pass
-Time : May 11 2025 16:19:26
+Time : May 13 2025 20:04:12
