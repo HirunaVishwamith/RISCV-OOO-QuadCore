@@ -42,3 +42,9 @@ histo-s4: test pass
 Program cycles: 565802
 histo-s5: test pass
 Time : May 13 2025 20:04:12
+Program cycles: 7188
+Program cycles: 7188
+vvadd-s1: test pass
+Program cycles: 7188
+Program cycles new: 13919
+vvadd-s1: test pass

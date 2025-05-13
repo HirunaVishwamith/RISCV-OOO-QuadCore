@@ -173,6 +173,8 @@ int main(int argc, char* argv[]) {
   //Performance check
   int prog_count = 0;
   bool prog_count_true = false;  
+  unsigned long count_start = 0UL;
+  unsigned long count_stop = 0UL;
 
   while (1 || (bench.tickcount + bench.dump_tick) < 800351768UL) {
     //cout<<"instruction is :" << golden_model.get_instruction()<<endl;
@@ -645,9 +647,11 @@ int main(int argc, char* argv[]) {
     //thread_entry
     if (bench.prev_pc_core0 == 0x800002dc) {
       prog_count_true = true;
+      count_start = bench.dump_tick;
     //barrier
     } else if (bench.prev_pc_core0 == 0x8000025c) {
       prog_count_true = false;
+      count_stop = bench.dump_tick;
     }
     if (prog_count_true) {
       prog_count += 1;
@@ -659,6 +663,7 @@ int main(int argc, char* argv[]) {
       FILE *file = fopen("test_results.txt", "a");
       printf("Program cycles: %d\n",prog_count);
       fprintf(file, "Program cycles: %d\n", prog_count);
+      fprintf(file, "Program cycles new: %ld\n", count_stop - count_start);
       fclose(file);
       #ifdef LOGGING
       outFile_core0.close();
